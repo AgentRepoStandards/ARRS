@@ -1,0 +1,362 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "path",
+    "policyMode",
+    "technical",
+    "review",
+    "scope",
+    "requiredChecks",
+    "verificationTargets",
+    "steps",
+    "acceptance",
+    "baseline",
+    "residualRisks",
+    "deviations",
+    "limitations",
+    "coverage"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1"
+    },
+    "kind": {
+      "const": "proof-explanation"
+    },
+    "path": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "task": {
+      "type": "string"
+    },
+    "category": {
+      "enum": ["bug", "feature", "refactor", "docs"]
+    },
+    "risk": {
+      "enum": ["R0", "R1", "R2", "R3", "R4"]
+    },
+    "createdAt": {
+      "type": "string"
+    },
+    "recordedStatus": {
+      "enum": ["passed", "failed"]
+    },
+    "manifestSha256": {
+      "type": "string"
+    },
+    "policyMode": {
+      "type": "string"
+    },
+    "technical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["valid", "errors"],
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ready", "status", "accepted", "required", "errors", "attachments"],
+      "properties": {
+        "ready": {
+          "type": "boolean"
+        },
+        "status": {
+          "enum": ["invalid-proof", "ready-for-review", "accepted"]
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "required": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["independent", "humanApproval"],
+              "properties": {
+                "independent": {
+                  "type": "boolean"
+                },
+                "humanApproval": {
+                  "type": "boolean"
+                }
+              }
+            }
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "valid", "errors"],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "valid": {
+                "type": "boolean"
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "fresh"],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string"
+          },
+          "fresh": {
+            "type": ["boolean", "null"]
+          }
+        }
+      }
+    },
+    "requiredChecks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verificationTargets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "planned", "result", "matchedExpectedExit", "argvBound"],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "planned": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["phase", "command", "expectExitCode"],
+            "properties": {
+              "phase": {
+                "enum": ["before", "check", "test", "behavior", "after", "mechanical"]
+              },
+              "command": {
+                "enum": ["setup", "dev", "check", "test", "verify", "build"]
+              },
+              "target": {
+                "type": "string",
+                "minLength": 1
+              },
+              "expectExitCode": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 255
+              },
+              "criterion": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "result": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "phase",
+                  "command",
+                  "expectExitCode",
+                  "argv",
+                  "exitCode",
+                  "durationMs",
+                  "log",
+                  "sha256"
+                ],
+                "properties": {
+                  "phase": {
+                    "enum": ["before", "check", "test", "behavior", "after", "mechanical"]
+                  },
+                  "command": {
+                    "enum": ["setup", "dev", "check", "test", "verify", "build"]
+                  },
+                  "target": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "expectExitCode": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "criterion": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "argv": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "exitCode": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "durationMs": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "log": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              }
+            ]
+          },
+          "matchedExpectedExit": {
+            "type": "boolean"
+          },
+          "argvBound": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["criterion", "resultIndices", "satisfied"],
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "resultIndices": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "satisfied": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "baseline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["beforeIndex", "afterIndices", "identicalArgv"],
+        "properties": {
+          "beforeIndex": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "afterIndices": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "identicalArgv": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "residualRisks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "deviations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assurance"],
+      "properties": {
+        "assurance": {
+          "enum": ["declared-only", "git-complete"]
+        },
+        "snapshot": {}
+      }
+    },
+    "policyTransitionLimitation": {
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arrs.dev/schemas/0.1/proof-explanation.schema.json"
+}

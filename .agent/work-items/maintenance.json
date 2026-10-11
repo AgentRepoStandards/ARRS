@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "0.1",
+  "id": "arrs-maintenance-example",
+  "title": "Prepare a mapped documentation update with independent task context",
+  "state": "ready-for-agent",
+  "risk": "R2",
+  "category": "docs",
+  "featureIds": ["bootstrap"],
+  "acceptance": ["README quickstart commands remain executable."],
+  "context": ["README.md", "docs/adoption.md"],
+  "verificationTargets": ["bootstrap"],
+  "dependencies": [],
+  "decisions": []
+}

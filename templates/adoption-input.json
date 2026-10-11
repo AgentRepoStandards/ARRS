@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.1",
+  "id": "report-export",
+  "goal": "Operators can export the existing report with its established formatting.",
+  "owners": ["reports"],
+  "entryPoints": ["src/reports/export.ts"],
+  "implementation": ["src/reports"],
+  "tests": ["tests/reports/export.test.ts"],
+  "boundaries": ["reports"],
+  "dependencies": [],
+  "domainTerms": ["Report"],
+  "invariants": ["Export preserves the report's existing ordering."],
+  "sensitivity": "internal",
+  "acceptance": [
+    "Exporting the known report returns the established columns and ordering."
+  ],
+  "verification": {
+    "target": "report-export",
+    "command": { "argv": ["npm", "run", "test:reports"] }
+  },
+  "risk": "R2",
+  "related": ["docs/product/reports.md"]
+}

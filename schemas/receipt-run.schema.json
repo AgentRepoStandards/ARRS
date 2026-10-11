@@ -1,0 +1,311 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arrs.dev/schemas/1/receipt-run.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "repository",
+    "revision",
+    "comparisonBase",
+    "runId",
+    "attemptId",
+    "manifestSha256",
+    "candidateAuthorId",
+    "workflow",
+    "toolSha256",
+    "controls",
+    "evaluationSequence",
+    "trigger",
+    "startedAt",
+    "finishedAt",
+    "state",
+    "conclusion",
+    "commands",
+    "acceptance",
+    "scope",
+    "artifacts",
+    "nonce",
+    "category",
+    "candidateSequence"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "kind": {
+      "const": "github-offline-run"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "comparisonBase": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "manifestSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "candidateAuthorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "path", "revision"],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^\\.github/workflows/[A-Za-z0-9_.-]+\\.ya?ml$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        }
+      }
+    },
+    "toolSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256",
+        "selectionSequence",
+        "requiredChecks",
+        "requiredIndependent",
+        "requiredHumanAcceptance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "\\S"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "selectionSequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "enum": ["setup", "dev", "check", "test", "verify", "build"]
+          }
+        },
+        "requiredIndependent": {
+          "type": "boolean"
+        },
+        "requiredHumanAcceptance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "evaluationSequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trigger": {
+      "enum": [
+        "pull_request",
+        "workflow_dispatch",
+        "pull_request_target",
+        "push",
+        "unknown"
+      ]
+    },
+    "startedAt": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 30
+    },
+    "finishedAt": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 30
+    },
+    "state": {
+      "enum": ["completed", "skipped", "unsupported"]
+    },
+    "conclusion": {
+      "enum": ["success", "failure", "skipped"]
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "command",
+          "phase",
+          "argvSha256",
+          "timeoutSeconds",
+          "exitCode",
+          "execution",
+          "logSha256",
+          "expectExitCode"
+        ],
+        "properties": {
+          "command": {
+            "enum": ["setup", "dev", "check", "test", "verify", "build"]
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "\\S"
+          },
+          "phase": {
+            "enum": ["before", "check", "test", "behavior", "after", "mechanical"]
+          },
+          "argvSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600
+          },
+          "exitCode": {
+            "type": "integer"
+          },
+          "execution": {
+            "enum": ["executed", "skipped", "unsupported"]
+          },
+          "logSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expectExitCode": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "acceptance": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["criterionSha256", "resultIndices"],
+        "properties": {
+          "criterionSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "resultIndices": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 99
+            }
+          }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assurance", "fingerprint", "base", "revision"],
+      "properties": {
+        "assurance": {
+          "const": "git-complete"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "base": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "sha256", "bytes"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "maxLength": 128
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        }
+      }
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "category": {
+      "enum": ["feature", "bug", "refactor", "docs"]
+    },
+    "candidateSequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

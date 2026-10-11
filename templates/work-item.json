@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "0.1",
+  "id": "export-acceptance",
+  "title": "Prove populated and empty exports at the CLI boundary",
+  "state": "needs-triage",
+  "risk": "R2",
+  "category": "feature",
+  "featureIds": ["report-export"],
+  "acceptance": [
+    "Three selected fixture records produce three rows with stable identifiers",
+    "An empty selection produces a valid report with no data rows"
+  ],
+  "context": [
+    "docs/features/report-export.json",
+    "docs/architecture/README.md",
+    "src/export.ts"
+  ],
+  "verificationTargets": ["report-export"],
+  "dependencies": [],
+  "decisions": []
+}

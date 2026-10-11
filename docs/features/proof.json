@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "0.1",
+  "id": "proof",
+  "goal": "Capture real behavior and reject failed, stale or tampered evidence.",
+  "owners": ["workflows"],
+  "entryPoints": ["src/cli.ts"],
+  "implementation": [
+    "src/workflows/proof.ts",
+    "src/core/evidence.ts",
+    "src/core/evidence-ignore.ts",
+    "src/core/proof-explanation.ts",
+    "src/workflows/proof-report.ts",
+    "src/core/outcomes.ts",
+    "src/core/changeset.ts",
+    "src/core/receipt.ts",
+    "src/core/receipt-provider.ts",
+    "src/workflows/receipt.ts"
+  ],
+  "boundaries": ["workflows", "core", "cli"],
+  "dependencies": [],
+  "domainTerms": ["Maturity level", "Proof Contract", "Feature Map"],
+  "invariants": [
+    "Read-only explanation/history use canonical shared validators, preserve failed/interrupted attempts and treat provenance as an untrusted hint; technical success never supplies pending implementation acceptance.",
+    "Exclusive ignored local HTML reports remain outside canonical evidence, escape evidence text and omit raw logs unless explicit verified bounded redacted excerpts are requested.",
+    "Required failures cannot be reported successful.",
+    "Explicit independently selected pre-change policy context preserves maximum scope floors, required checks and command bindings, stronger autonomy/review/human gates and immutable proof/work bindings; missing or drifting context rejects before admission effects, while candidate-only evaluation is labeled informational for control transitions.",
+    "Before and after scenarios use identical argv.",
+    "Directory hashes cover declared source regardless of directory basename, including generated modules, excluding only exact root metadata, evidence and dependencies.",
+    "Captured timeout/output-limit results follow bounded owned-group cleanup; descendants cannot keep modifying source after stopped execution reports completion.",
+    "Every finish reserves a distinct immutable attempt before execution, preserving the original baseline and failed/interrupted attempt history.",
+    "Technical evidence supports review readiness; acceptance requires implementation review bound to the chosen canonical attempt under current policy.",
+    "Proof/review writes and current validation require whole-directory protection, explicitly distinguishing measured Git exclusion from canonical local fallback.",
+    "Excluded root dependency symlinks do not affect source-only hashes or retained proof; declared and visited source still reject symlinks.",
+    "Safely normalized root/output scope aliases reject before commands or evidence writes; prior invalid alias proof cannot qualify, while raw scope keys and legitimate nested source remain intact.",
+    "Filesystem-identical case aliases of reserved root proof scope cannot establish capture, validation, work or audit acceptance; distinct case-sensitive source entries retain freshness coverage.",
+    "Filesystem-identical source aliases and ancestor scopes retain the maximum sensitive-path and Feature Map implementation/entry-point risk floor; distinct entries and exact missing suffixes preserve source semantics.",
+    "Automatic lifecycle facts and append-only windowed observations preserve unknown metric denominators and never change proof/work risk, readiness, approval or autonomy; immutable duplicate source identities cannot inflate task/attempt counts.",
+    "Prepared proof drafts preserve exact criterion links and existing validation; missing real bug/refactor scenario identity or expected exits remains a blocker and preparation supplies no captured evidence or review.",
+    "Opt-in Git changeset proof retains explicit base/HEAD/index/raw-working inventory, covers all nonexcluded changed endpoints including deletions and renames, and rejects uncovered or later drifting state without upgrading legacy declared-only evidence.",
+    "Opt-in signed receipts verify independently selected external verifier/provider/review roots, exact immutable Git scope and retained controls; offline GitHub conformance never implies hosted assurance or production admission, and local metadata exports cannot authenticate reviews."
+  ],
+  "sensitivity": "internal",
+  "acceptance": [
+    "Feature capture executes a configured acceptance command and validates its canonical manifest; required command failure, changed source/logs/argv or unrelated static checks prevent valid proof.",
+    "Bug start captures a failing before scenario and finish proves the same argv succeeds after correction; refactor start/finish retain passing before and after behavior.",
+    "Each finish reserves a distinct immutable attempt, retains failed/interrupted history and original baseline logs, and refuses stale or altered baseline/command bindings before execution.",
+    "R2 technical proof enables review readiness while acceptance requires actual implementation review bound to the selected attempt; failed and noncanonical attempts cannot acquire acceptance."
+  ],
+  "verification": {
+    "target": "proof"
+  },
+  "risk": "R2",
+  "related": [
+    "docs/adr/0006-local-proof-explanations.md",
+    "docs/spec/0.1.md",
+    "docs/architecture/README.md",
+    "docs/adr/0005-trusted-pre-change-policy.md",
+    "docs/metrics.md",
+    "docs/task-preparation.md",
+    "docs/adr/0006-explicit-git-changesets.md",
+    "docs/qualification/reference-behaviors.md",
+    "docs/receipts.md",
+    "docs/adr/0007-offline-trusted-receipts.md"
+  ]
+}

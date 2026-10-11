@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.1",
+  "id": "skills",
+  "goal": "Install portable workflows and reconcile pinned upstream changes deliberately.",
+  "owners": ["workflows", "core"],
+  "entryPoints": ["src/cli.ts"],
+  "implementation": ["src/workflows/skills.ts", "src/core/skills-check.ts"],
+  "boundaries": ["workflows", "core", "cli"],
+  "dependencies": [],
+  "domainTerms": ["Maturity level", "Proof Contract", "Feature Map"],
+  "invariants": [
+    "Synchronization stages source only.",
+    "Existing adaptations are never overwritten by install/sync.",
+    "Unsupported CLI action flags fail before repository mutation or execution; only init accepts dry-run.",
+    "Skills testing, doctor and audit use one core-owned semantic validator against the installed pack\u2019s own pins.",
+    "Reconciliation candidates pass the same strict metadata, workflow, source-provenance and exact-license contract before writes; staging independently verifies complete source bytes."
+  ],
+  "sensitivity": "internal",
+  "acceptance": [
+    "Offline install validates pinned source, metadata and exact license text, preserves existing adaptation bytes and is idempotent across repeated CLI invocations.",
+    "Sync stages changed source/supporting references without overwriting adaptations; reconcile rejects malformed, stale or unapproved disposition/license inputs before writes.",
+    "Skills CLI, doctor and audit apply one semantic validator, so a rejected installed pack cannot earn skills capability."
+  ],
+  "verification": {
+    "target": "skills"
+  },
+  "risk": "R2",
+  "related": [
+    "docs/spec/0.1.md",
+    "docs/architecture/README.md",
+    "docs/qualification/reference-behaviors.md"
+  ]
+}

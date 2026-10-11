@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "0.1",
+  "classes": {
+    "R0": {
+      "autonomy": "unattended",
+      "requiredChecks": ["check"],
+      "independentReview": false,
+      "humanApproval": false
+    },
+    "R1": {
+      "autonomy": "unattended",
+      "requiredChecks": ["check", "test"],
+      "independentReview": false,
+      "humanApproval": false
+    },
+    "R2": {
+      "autonomy": "review",
+      "requiredChecks": ["check", "test", "verify", "build"],
+      "independentReview": true,
+      "humanApproval": false
+    },
+    "R3": {
+      "autonomy": "human",
+      "requiredChecks": ["check", "test", "verify", "build"],
+      "independentReview": true,
+      "humanApproval": true
+    },
+    "R4": {
+      "autonomy": "human",
+      "requiredChecks": ["check", "test", "verify", "build"],
+      "independentReview": true,
+      "humanApproval": true
+    }
+  },
+  "sensitivePaths": [
+    {
+      "path": ".agent/policies",
+      "risk": "R3",
+      "reason": "Control changes can weaken architectural/risk/security gates."
+    },
+    {
+      "path": "src/core/security.ts",
+      "risk": "R3",
+      "reason": "Security detection is a sensitive public contract."
+    },
+    {
+      "path": "src/core/evidence.ts",
+      "risk": "R3",
+      "reason": "Proof validation constrains agent completion and review."
+    },
+    {
+      "path": ".github/workflows",
+      "risk": "R3",
+      "reason": "CI is a repository admission control."
+    },
+    {
+      "path": "package.json",
+      "risk": "R3",
+      "reason": "Dependency and executable contract changes need justified review."
+    },
+    {
+      "path": "arrs.json",
+      "risk": "R3",
+      "reason": "Command argv, configured contract paths and proof requirements determine execution and admission."
+    },
+    {
+      "path": "schemas",
+      "risk": "R3",
+      "reason": "Every shipped schema defines which configuration, evidence, review and work records are admitted."
+    },
+    {
+      "path": "src/core",
+      "risk": "R3",
+      "reason": "Core owns path traversal, command execution, configuration/schema validation, risk, architecture, security, CI, audit, proof freshness and work admission."
+    },
+    {
+      "path": "src/cli.ts",
+      "risk": "R3",
+      "reason": "Option parsing and dispatch determine whether command effects and privileged execution are permitted."
+    },
+    {
+      "path": "src/workflows/proof.ts",
+      "risk": "R3",
+      "reason": "Capture/finalization/review writes determine which executed results are accepted as evidence."
+    },
+    {
+      "path": "src/workflows/work.ts",
+      "risk": "R3",
+      "reason": "Transitions mutate persisted work and enforce executable/reviewable/completed admission."
+    },
+    {
+      "path": "src/workflows/init.ts",
+      "risk": "R3",
+      "reason": "Bootstrap preserves user files and generates executable contracts, control policies and evidence protection."
+    },
+    {
+      "path": "src/workflows/skills.ts",
+      "risk": "R3",
+      "reason": "Staging and reconciliation admit source inventories and pinned adaptation/license records before writes."
+    },
+    {
+      "path": "assets/repo.cjs",
+      "risk": "R3",
+      "reason": "The shipped standalone runner resolves argv and owns command termination/failure propagation."
+    },
+    {
+      "path": ".agent/repo.cjs",
+      "risk": "R3",
+      "reason": "The tracked repository runner implements actual local execution, independent of the shipped asset."
+    },
+    {
+      "path": "repo",
+      "risk": "R3",
+      "reason": "The root dispatch wrapper selects the standalone runner and propagates its result."
+    },
+    {
+      "path": "assets/repo.template",
+      "risk": "R3",
+      "reason": "The bootstrap dispatch wrapper determines the runner invoked in newly initialized repositories."
+    },
+    {
+      "path": "scripts/controls.mjs",
+      "risk": "R3",
+      "reason": "The admission script composes architecture/security/schema/skills gates and preserves failures."
+    },
+    {
+      "path": "scripts/test.mjs",
+      "risk": "R3",
+      "reason": "The test admission script discovers suites and propagates actual failures."
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "risk": "R3",
+      "reason": "The behavior admission script exercises execution, proof, audit and negative boundary scenarios."
+    },
+    {
+      "path": "src/workflows/adopt.ts",
+      "risk": "R3",
+      "reason": "Adoption applies reviewed governing-control and capability patches, checks execution authorization and persists original-byte recovery records."
+    },
+    {
+      "path": "src/workflows/receipt.ts",
+      "risk": "R3",
+      "reason": "Receipt import/export writes and externally selected verification delimit authenticated provider claims from local evidence."
+    },
+    {
+      "path": ".github/scripts",
+      "risk": "R3",
+      "reason": "Hosted CI provisioning verifies downloaded toolchain artifacts and controls executable installation and version admission."
+    }
+  ]
+}

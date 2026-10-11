@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "0.1",
+  "modules": [
+    {
+      "id": "core",
+      "path": "src/core",
+      "allows": ["assets"],
+      "public": ["src/core"]
+    },
+    {
+      "id": "workflows",
+      "path": "src/workflows",
+      "allows": ["core"],
+      "public": ["src/workflows"]
+    },
+    {
+      "id": "cli",
+      "path": "src/cli.ts",
+      "allows": ["core", "workflows"],
+      "public": ["src/cli.ts"]
+    },
+    {
+      "id": "assets",
+      "path": "assets",
+      "allows": [],
+      "public": ["assets/repo.cjs", "assets/repo.d.cts"]
+    },
+    {
+      "id": "tests",
+      "path": "tests",
+      "allows": ["core", "workflows", "core-built", "workflows-built", "ci-setup"],
+      "public": ["tests/helpers.mjs"]
+    },
+    {
+      "id": "scripts",
+      "path": "scripts",
+      "allows": ["core", "workflows", "tests", "core-built", "workflows-built"],
+      "public": ["scripts/verify.mjs"]
+    },
+    {
+      "id": "core-built",
+      "path": "dist/core",
+      "allows": [],
+      "public": ["dist/core"],
+      "generated": true
+    },
+    {
+      "id": "workflows-built",
+      "path": "dist/workflows",
+      "allows": [],
+      "public": ["dist/workflows"],
+      "generated": true
+    },
+    {
+      "id": "ci-setup",
+      "path": ".github/scripts",
+      "allows": [],
+      "public": [".github/scripts/setup-git.mjs"]
+    }
+  ]
+}

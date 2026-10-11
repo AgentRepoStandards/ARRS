@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "0.1",
+  "project": {
+    "name": "ARRS",
+    "runtimes": {
+      "node": ">=22",
+      "npm": ">=10"
+    }
+  },
+  "commands": {
+    "setup": {
+      "argv": ["npm", "ci"],
+      "timeoutSeconds": 300
+    },
+    "check": {
+      "argv": ["npm", "run", "check"],
+      "timeoutSeconds": 300
+    },
+    "test": {
+      "argv": ["npm", "run", "test"],
+      "timeoutSeconds": 900
+    },
+    "verify": {
+      "argv": ["npm", "run", "verify"],
+      "timeoutSeconds": 300
+    },
+    "build": {
+      "argv": ["npm", "run", "build"],
+      "timeoutSeconds": 300
+    },
+    "dev": {
+      "argv": ["npm", "run", "build"]
+    }
+  },
+  "verifyTargets": {
+    "bootstrap": {
+      "argv": ["node", "--test", "tests/cli.test.mjs"]
+    },
+    "audit": {
+      "argv": [
+        "node",
+        "--test",
+        "tests/audit.test.mjs",
+        "tests/core.test.mjs",
+        "tests/diagnostics.test.mjs",
+        "tests/ci.test.mjs",
+        "tests/context.test.mjs"
+      ]
+    },
+    "proof": {
+      "argv": ["node", "--test", "tests/proof.test.mjs"]
+    },
+    "skills": {
+      "argv": ["node", "--test", "tests/skills.test.mjs"]
+    },
+    "operations": {
+      "argv": ["node", "--test", "tests/workflows.test.mjs"]
+    },
+    "end-to-end": {
+      "argv": ["node", "scripts/verify.mjs"]
+    },
+    "qualification": {
+      "argv": ["node", "--test", "tests/diagnostics.test.mjs"]
+    },
+    "receipts": {
+      "argv": ["node", "--test", "tests/receipt-conformance.mjs"]
+    },
+    "mcp": {
+      "argv": ["node", "--test", "tests/mcp.mjs"]
+    },
+    "graph": {
+      "argv": ["node", "--test", "tests/graph.test.mjs"]
+    }
+  },
+  "knowledge": {
+    "architecture": "docs/architecture",
+    "product": "docs/product",
+    "features": "docs/features",
+    "decisions": "docs/adr"
+  },
+  "architecture": {
+    "policy": ".agent/policies/architecture.json"
+  },
+  "riskPolicy": ".agent/policies/risk.json",
+  "proof": {
+    "requiredChecks": ["check", "test", "build"],
+    "behavioralRequiredFrom": "R1",
+    "evidenceDir": ".arrs/evidence"
+  },
+  "skills": {
+    "path": "skills"
+  },
+  "ci": {
+    "workflow": ".github/workflows/ci.yml"
+  },
+  "security": {
+    "exceptions": ".agent/policies/exceptions.json"
+  }
+}

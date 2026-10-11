@@ -1,0 +1,291 @@
+{
+  "schemaVersion": "0.1",
+  "packVersion": "0.1.2",
+  "skills": [
+    {
+      "id": "arrs-spec",
+      "path": "arrs-spec/SKILL.md",
+      "requiredTerms": [
+        "goal",
+        "acceptance",
+        "Feature Maps",
+        "invariants",
+        "boundaries",
+        "verification",
+        "risk",
+        "unresolved"
+      ],
+      "sources": [
+        "skills/engineering/to-spec/SKILL.md",
+        "skills/engineering/grill-with-docs/SKILL.md",
+        "skills/engineering/wayfinder/SKILL.md",
+        "skills/productivity/grilling/SKILL.md"
+      ],
+      "sha256": "48adc463d444d37c2d4309efe159763c88a12cd096cf35960421f6fc70ed858b"
+    },
+    {
+      "id": "arrs-slice",
+      "path": "arrs-slice/SKILL.md",
+      "requiredTerms": [
+        "vertical",
+        "acceptance",
+        "Feature Maps",
+        "risk",
+        "blockers",
+        "verification",
+        "boundaries",
+        "context"
+      ],
+      "sources": ["skills/engineering/to-tickets/SKILL.md"],
+      "sha256": "ff42f916bada3d739b28fe1d2903c00101dab83143775ff3fdb2bcdc91ad8257"
+    },
+    {
+      "id": "arrs-implement",
+      "path": "arrs-implement/SKILL.md",
+      "requiredTerms": [
+        "Feature Maps",
+        "risk",
+        "paved road",
+        "static",
+        "tests",
+        "behavior",
+        "proof",
+        "review"
+      ],
+      "sources": [
+        "skills/engineering/implement/SKILL.md",
+        "skills/engineering/implement-spec/SKILL.md"
+      ],
+      "sha256": "c04742e32078c1423a6911384aeebd4224e1e0891fb281fa826a3b2c1bf97d0b"
+    },
+    {
+      "id": "arrs-debug",
+      "path": "arrs-debug/SKILL.md",
+      "requiredTerms": [
+        "reproduce",
+        "root cause",
+        "before",
+        "after",
+        "regression",
+        "risk",
+        "proof"
+      ],
+      "sources": ["skills/engineering/diagnosing-bugs/SKILL.md"],
+      "sha256": "bdf0f29a703aa68e1b1753e5d1ce69454c35c38fd3e1da1cf6cbf69bdbe51f81"
+    },
+    {
+      "id": "arrs-tdd",
+      "path": "arrs-tdd/SKILL.md",
+      "requiredTerms": [
+        "red",
+        "green",
+        "vertical",
+        "public interface",
+        "behavior",
+        "proof",
+        "risk"
+      ],
+      "sources": ["skills/engineering/tdd/SKILL.md"],
+      "sha256": "43303063c131ecfe644cc86acf45e7b384b25730bd7452eae826140d1aae6c9e"
+    },
+    {
+      "id": "arrs-design",
+      "path": "arrs-design/SKILL.md",
+      "requiredTerms": [
+        "interface",
+        "boundaries",
+        "mechanical",
+        "before",
+        "after",
+        "risk",
+        "proof"
+      ],
+      "sources": [
+        "skills/engineering/codebase-design/SKILL.md",
+        "skills/in-progress/setup-ts-deep-modules/SKILL.md"
+      ],
+      "sha256": "e0bf3583f62e02776dcf9b416aa2316fff3c6c53cbff272ca9643f146b42fe8f"
+    },
+    {
+      "id": "arrs-gardener",
+      "path": "arrs-gardener/SKILL.md",
+      "requiredTerms": [
+        "observation",
+        "evidence",
+        "enforcement",
+        "proposed change",
+        "risk",
+        "verification"
+      ],
+      "sources": [
+        "skills/engineering/improve-codebase-architecture/SKILL.md",
+        "skills/engineering/retro/SKILL.md"
+      ],
+      "sha256": "4eff1895f5da5a59771fb688e54cce4e55d1318baa4cb4a1a4a0a69d798907bd"
+    },
+    {
+      "id": "arrs-domain",
+      "path": "arrs-domain/SKILL.md",
+      "requiredTerms": [
+        "product",
+        "Feature Maps",
+        "invariants",
+        "boundaries",
+        "ADR",
+        "risk"
+      ],
+      "sources": ["skills/engineering/domain-modeling/SKILL.md"],
+      "sha256": "1f3325b00cfc93a6a656e89a1a78a9bfab2035fda438cec0fd1bf25100c71015"
+    },
+    {
+      "id": "arrs-review",
+      "path": "arrs-review/SKILL.md",
+      "requiredTerms": [
+        "correctness",
+        "scope",
+        "architecture",
+        "invariants",
+        "security",
+        "tests",
+        "behavior",
+        "proof",
+        "risk",
+        "controls"
+      ],
+      "sources": [
+        "skills/engineering/code-review/SKILL.md",
+        "skills/engineering/pr/SKILL.md"
+      ],
+      "sha256": "ad9d6cd307e359957457d907eb78df6dfd0b6ee9602a1dab987ed17ab5a8cd62"
+    },
+    {
+      "id": "arrs-triage",
+      "path": "arrs-triage/SKILL.md",
+      "requiredTerms": [
+        "readiness",
+        "context",
+        "risk",
+        "blockers",
+        "agent",
+        "human",
+        "verification",
+        "state"
+      ],
+      "sources": ["skills/engineering/triage/SKILL.md"],
+      "sha256": "6775c0f3714fc31da07bced1e78b2839b3be5979f126fadb86efe791098655c4"
+    },
+    {
+      "id": "arrs-handoff",
+      "path": "arrs-handoff/SKILL.md",
+      "requiredTerms": [
+        "objective",
+        "Feature Maps",
+        "risk",
+        "state",
+        "commands",
+        "evidence",
+        "blockers",
+        "next"
+      ],
+      "sources": [
+        "skills/productivity/handoff/SKILL.md",
+        "skills/in-progress/claude-handoff/SKILL.md"
+      ],
+      "sha256": "eb996f82726383ae207fd5bebf4d90e557e77e91f4130d7fe37392ff314743c0"
+    },
+    {
+      "id": "arrs-adopt",
+      "path": "arrs-adopt/SKILL.md",
+      "requiredTerms": [
+        "init",
+        "commands",
+        "audit",
+        "risk",
+        "skills",
+        "verification",
+        "conflicts"
+      ],
+      "sources": [
+        "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+        "skills/misc/setup-pre-commit/SKILL.md"
+      ],
+      "sha256": "e31f6b065a84a59051d4e05fa9f9bf9a77528cba253e0bf58433c77dcdbb3254"
+    },
+    {
+      "id": "arrs-proof",
+      "path": "arrs-proof/SKILL.md",
+      "requiredTerms": [
+        "category",
+        "risk",
+        "acceptance",
+        "before",
+        "after",
+        "behavior",
+        "logs",
+        "scope",
+        "failed"
+      ],
+      "sources": [],
+      "sha256": "93eaa9bf1221da2277f6ac0e965254c83f646ade8cd9fca47c120f1b021220a8"
+    },
+    {
+      "id": "arrs-feature",
+      "path": "arrs-feature/SKILL.md",
+      "requiredTerms": [
+        "Feature Map",
+        "schema",
+        "goal",
+        "entry",
+        "invariants",
+        "verification",
+        "risk",
+        "paths"
+      ],
+      "sources": [],
+      "sha256": "e85ab2f836cbfc20319f56c7389aaefd75a71e4d5d8c596998f209e6f21c78c4"
+    },
+    {
+      "id": "arrs-research",
+      "path": "arrs-research/SKILL.md",
+      "requiredTerms": [
+        "primary",
+        "sources",
+        "revision",
+        "assumptions",
+        "risk",
+        "decision"
+      ],
+      "sources": ["skills/engineering/research/SKILL.md"],
+      "sha256": "17c64b6e6b1bd3621695479ae4d004486777bb2474b1a36251a0499b30400192"
+    },
+    {
+      "id": "arrs-prototype",
+      "path": "arrs-prototype/SKILL.md",
+      "requiredTerms": [
+        "question",
+        "risk",
+        "scratch",
+        "behavior",
+        "decision",
+        "verification"
+      ],
+      "sources": ["skills/engineering/prototype/SKILL.md"],
+      "sha256": "f9dcc1cc57ffd5394eb03df005c95e50fa60c2cb9646de4fa0c8ad386780a055"
+    },
+    {
+      "id": "arrs-author",
+      "path": "arrs-author/SKILL.md",
+      "requiredTerms": [
+        "trigger",
+        "inputs",
+        "outputs",
+        "gates",
+        "provenance",
+        "test",
+        "risk"
+      ],
+      "sources": ["skills/productivity/writing-for-agents/SKILL.md"],
+      "sha256": "ebf56193599dedd478099b4fe97db4a7de33bbf015bda7d3b061cd10cd94f49c"
+    }
+  ]
+}

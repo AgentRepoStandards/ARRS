@@ -1,0 +1,52 @@
+{
+  "name": "@arrs/cli",
+  "version": "0.1.0",
+  "description": "Agent-Ready Repository Standard: portable bootstrap, audit, proof and skills workflows",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "arrs": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "assets",
+    "skills",
+    "upstream",
+    "docs",
+    "templates",
+    "fixtures",
+    "README.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "GLOSSARY.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "npm run build && node scripts/controls.mjs",
+    "check": "npm run format:check && npm run typecheck && npm run lint",
+    "test": "npm run build && node scripts/test.mjs",
+    "verify": "npm run build && node scripts/verify.mjs",
+    "audit": "node dist/cli.js audit --execute --require-level 4",
+    "doctor": "node dist/cli.js doctor",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "ajv": "^8.17.1",
+    "typescript": "^5.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "prettier": "^3.6.0"
+  }
+}

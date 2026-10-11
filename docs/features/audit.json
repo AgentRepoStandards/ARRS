@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "0.1",
+  "id": "audit",
+  "goal": "Evaluate cumulative repository capability using schemas, gates and current evidence.",
+  "owners": ["core"],
+  "entryPoints": ["src/cli.ts"],
+  "implementation": ["src/core", "src/core/capability-graph.ts"],
+  "boundaries": ["core", "cli"],
+  "dependencies": [],
+  "domainTerms": ["Maturity level", "Proof Contract", "Feature Map"],
+  "invariants": [
+    "Condensed historical proof warnings retain individual canonical paths and authoritative accepted-validator diagnostics without changing capability credit.",
+    "Unexecuted audits cannot award executed controls.",
+    "Explicit independently selected pre-change policy context preserves maximum scope floors, required checks and command bindings, stronger autonomy/review/human gates and immutable proof/work bindings; missing or drifting context rejects before admission effects, while candidate-only evaluation is labeled informational for control transitions.",
+    "A failing lower level prevents every higher level.",
+    "Incomplete, blocked, unsupported and unevaluated controls never count as passed.",
+    "Declared handwritten source is scanned regardless of directory basename; normalized most-specific ownership controls generated exclusions and mutation-guard candidates.",
+    "Pending implementation review cannot satisfy proof-evidence when current risk policy requires accepted review.",
+    "Dotenv suffix files remain in bounded nonwaivable secret coverage; accepted evidence retains current ignore protection.",
+    "A pack rejected by skills test cannot receive the skills control; doctor and audit share the same core semantic validator.",
+    "The ARRS checkout policy imposes justified R3 floors on configuration, every shipped schema and control implementations; proof/work cannot declare lower risk, while consumer policy locations and unrelated documentation remain unchanged.",
+    "Verification targets must be explicitly owned configuration entries; absent inherited names cannot satisfy maps, readiness or command execution, while valid own names retain literal argv.",
+    "CI validates literal needs references after collecting all jobs and rejects missing/self/cyclic graphs; unsupported dependency syntax never earns capability, and static inspection does not claim hosted execution.",
+    "CI accounts for nested mapping/sequence indentation ownership before selecting semantic fields; scalar/inline descendants and inconsistent blocks cannot earn capability, while supported literal script contents remain opaque.",
+    "Source-only proof remains valid with unrelated excluded root dependency symlinks; actual source changes and source symlinks still fail freshness/safety checks.",
+    "Proof-evidence rejects prior invalid normalized root/output scope aliases through shared accepted validation; output exclusions cannot turn prohibited declared scope into accepted empty hashes.",
+    "Filesystem-identical case aliases of reserved root proof scope cannot establish capture, validation, work or audit acceptance; distinct case-sensitive source entries retain freshness coverage.",
+    "Filesystem-identical source aliases and ancestor scopes retain the maximum sensitive-path and Feature Map implementation/entry-point risk floor; distinct entries and exact missing suffixes preserve source semantics.",
+    "Versioned architecture adapters retain JS/TS defaults and reject unsupported identity, mixed source, no coverage and parser failure; Python candidate reports remain provisional until actual pilot inventory and application evidence exist.",
+    "Capability graph projects maintained and observed provenance separately, retains complete comparison endpoints and historical floors/targets, qualifies only explicitly related exact selected work evidence through scoped readiness, and preserves unknown runtime impact and semantic freshness without execution or writes."
+  ],
+  "sensitivity": "internal",
+  "acceptance": [
+    "Read-only audit reports execution controls not-evaluated and does not invoke configured commands; executed audit records failures and prevents higher cumulative levels.",
+    "The declared-source scanner admits allowed public relative imports, rejects forbidden/private/unresolved/computed imports and proves rejection by injecting a forbidden edge through the same scanner without writing source.",
+    "Doctor and audit report incomplete architecture, unavailable executables, broken knowledge references and unsupported controls with actionable status rather than awarding passed capability.",
+    "Accepted proof-evidence rejects failed, stale or unreviewed selected attempts under current policy; protected audit rejects missing or drifting external baseline/command context before effects."
+  ],
+  "verification": {
+    "target": "audit"
+  },
+  "risk": "R2",
+  "related": [
+    "docs/spec/0.1.md",
+    "docs/architecture/README.md",
+    "docs/risk.md",
+    ".agent/policies/risk.json",
+    "docs/adr/0005-trusted-pre-change-policy.md",
+    "docs/qualification/reference-behaviors.md",
+    "docs/architecture/adapter-conformance.md",
+    "docs/adr/0006-provisional-language-adapter.md",
+    "docs/readiness.md",
+    "docs/capability-graph.md",
+    "docs/adr/0008-capability-graph-provenance.md"
+  ]
+}

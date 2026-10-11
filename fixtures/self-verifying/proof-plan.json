@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "0.1",
+  "task": "task-preview-feature",
+  "category": "feature",
+  "risk": "R1",
+  "scope": ["src/domain", "src/application"],
+  "acceptance": ["Valid tasks are normalized and empty titles fail."],
+  "steps": [
+    {
+      "phase": "check",
+      "command": "check",
+      "expectExitCode": 0
+    },
+    {
+      "phase": "test",
+      "command": "test",
+      "expectExitCode": 0
+    },
+    {
+      "phase": "mechanical",
+      "command": "build",
+      "expectExitCode": 0
+    },
+    {
+      "phase": "behavior",
+      "command": "verify",
+      "target": "task-preview",
+      "expectExitCode": 0,
+      "criterion": "Valid tasks are normalized and empty titles fail."
+    }
+  ],
+  "residualRisks": [],
+  "deviations": []
+}

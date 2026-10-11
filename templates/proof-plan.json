@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "0.1",
+  "task": "export-acceptance",
+  "category": "feature",
+  "risk": "R2",
+  "scope": ["src/export.ts", "tests/export.test.mjs"],
+  "acceptance": [
+    "Three selected fixture records produce three rows with stable identifiers",
+    "An empty selection produces a valid report with no data rows"
+  ],
+  "steps": [
+    { "phase": "check", "command": "check", "expectExitCode": 0 },
+    { "phase": "test", "command": "test", "expectExitCode": 0 },
+    { "phase": "check", "command": "build", "expectExitCode": 0 },
+    {
+      "phase": "behavior",
+      "command": "verify",
+      "target": "report-export",
+      "expectExitCode": 0,
+      "criterion": "Three selected fixture records produce three rows with stable identifiers"
+    },
+    {
+      "phase": "behavior",
+      "command": "verify",
+      "target": "report-export",
+      "expectExitCode": 0,
+      "criterion": "An empty selection produces a valid report with no data rows"
+    }
+  ],
+  "residualRisks": [],
+  "deviations": []
+}

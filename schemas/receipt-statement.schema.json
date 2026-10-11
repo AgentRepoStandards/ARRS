@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arrs.dev/schemas/1/receipt-statement.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["_type", "subject", "predicateType", "predicate"],
+  "properties": {
+    "_type": {
+      "const": "https://in-toto.io/Statement/v1"
+    },
+    "subject": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "digest"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+          },
+          "digest": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["gitCommit"],
+            "properties": {
+              "gitCommit": {
+                "type": "string",
+                "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "predicateType": {
+      "const": "https://arrs.dev/predicates/trusted-receipt/v1"
+    },
+    "predicate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "assurance",
+        "verifierId",
+        "nonce",
+        "issuedAt",
+        "expiresAt",
+        "run",
+        "reviews"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1"
+        },
+        "assurance": {
+          "const": "offline-provider-conformance"
+        },
+        "verifierId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "\\S"
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "\\S"
+        },
+        "issuedAt": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 30
+        },
+        "expiresAt": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 30
+        },
+        "run": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["payloadType", "payload", "signatures"],
+          "properties": {
+            "payloadType": {
+              "enum": [
+                "application/vnd.in-toto+json",
+                "application/vnd.arrs.github-offline+json"
+              ]
+            },
+            "payload": {
+              "type": "string",
+              "minLength": 4,
+              "maxLength": 2000000
+            },
+            "signatures": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["keyid", "sig"],
+                "properties": {
+                  "keyid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256,
+                    "pattern": "\\S"
+                  },
+                  "sig": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 256
+                  }
+                }
+              }
+            }
+          }
+        },
+        "reviews": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["payloadType", "payload", "signatures"],
+            "properties": {
+              "payloadType": {
+                "enum": [
+                  "application/vnd.in-toto+json",
+                  "application/vnd.arrs.github-offline+json"
+                ]
+              },
+              "payload": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 2000000
+              },
+              "signatures": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 1,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["keyid", "sig"],
+                  "properties": {
+                    "keyid": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256,
+                      "pattern": "\\S"
+                    },
+                    "sig": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

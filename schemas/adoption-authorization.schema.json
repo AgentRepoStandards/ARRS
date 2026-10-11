@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arrs.dev/schemas/0.1/adoption-authorization.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "proposalSha256", "humanApproval"],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1"
+    },
+    "proposalSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "humanApproval": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    }
+  }
+}

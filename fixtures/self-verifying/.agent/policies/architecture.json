@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "0.1",
+  "modules": [
+    {
+      "id": "domain",
+      "path": "src/domain",
+      "allows": [],
+      "public": ["src/domain/task.mjs"]
+    },
+    {
+      "id": "application",
+      "path": "src/application",
+      "allows": ["domain"],
+      "public": ["src/application/main.mjs"]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "0.1",
+  "task": "arrs-self-workflow",
+  "category": "docs",
+  "risk": "R0",
+  "scope": ["README.md"],
+  "acceptance": [
+    "A repository can be initialized, verified and produce validated proof."
+  ],
+  "steps": [
+    {
+      "phase": "check",
+      "command": "check",
+      "expectExitCode": 0
+    },
+    {
+      "phase": "test",
+      "command": "test",
+      "expectExitCode": 0
+    },
+    {
+      "phase": "mechanical",
+      "command": "build",
+      "expectExitCode": 0
+    },
+    {
+      "phase": "behavior",
+      "command": "verify",
+      "target": "end-to-end",
+      "expectExitCode": 0,
+      "criterion": "A repository can be initialized, verified and produce validated proof."
+    }
+  ],
+  "residualRisks": [
+    "Local proof is evidence for cooperative engineering, not a signed attestation against a malicious author."
+  ],
+  "deviations": []
+}

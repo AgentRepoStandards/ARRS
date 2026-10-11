@@ -1,0 +1,5 @@
+# Stable checkout bytes keep formatting and derived-skill hashes portable.
+* text=auto eol=lf
+
+# The pinned upstream snapshot must retain exact original blob bytes.
+upstream/** -text

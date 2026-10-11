@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "0.1",
+  "classes": {
+    "R0": {
+      "autonomy": "unattended",
+      "requiredChecks": ["check"],
+      "independentReview": false,
+      "humanApproval": false
+    },
+    "R1": {
+      "autonomy": "unattended",
+      "requiredChecks": ["check", "test"],
+      "independentReview": false,
+      "humanApproval": false
+    },
+    "R2": {
+      "autonomy": "review",
+      "requiredChecks": ["check", "test", "verify", "build"],
+      "independentReview": true,
+      "humanApproval": false
+    },
+    "R3": {
+      "autonomy": "human",
+      "requiredChecks": ["check", "test", "verify", "build"],
+      "independentReview": true,
+      "humanApproval": true
+    },
+    "R4": {
+      "autonomy": "human",
+      "requiredChecks": ["check", "test", "verify", "build"],
+      "independentReview": true,
+      "humanApproval": true
+    }
+  },
+  "sensitivePaths": []
+}

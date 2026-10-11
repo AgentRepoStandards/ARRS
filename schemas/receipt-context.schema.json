@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arrs.dev/schemas/1/receipt-context.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "mode",
+    "repository",
+    "revision",
+    "comparisonBase",
+    "controls",
+    "requiredCommands",
+    "requiredCriteria",
+    "scopeFingerprint",
+    "attemptId",
+    "manifestSha256",
+    "nonce",
+    "now",
+    "consumedNonces",
+    "consumedReceipts",
+    "category",
+    "candidateSequence"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1"
+    },
+    "kind": {
+      "const": "receipt-consumer-context"
+    },
+    "mode": {
+      "enum": ["admission", "inspection"]
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "comparisonBase": {
+      "type": "string",
+      "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "sha256",
+        "selectionSequence",
+        "requiredChecks",
+        "requiredIndependent",
+        "requiredHumanAcceptance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "\\S"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "selectionSequence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "enum": ["setup", "dev", "check", "test", "verify", "build"]
+          }
+        },
+        "requiredIndependent": {
+          "type": "boolean"
+        },
+        "requiredHumanAcceptance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "requiredCommands": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "argvSha256", "timeoutSeconds"],
+        "properties": {
+          "command": {
+            "enum": ["setup", "dev", "check", "test", "verify", "build"]
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "\\S"
+          },
+          "argvSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600
+          }
+        }
+      }
+    },
+    "requiredCriteria": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "scopeFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "manifestSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "\\S"
+    },
+    "now": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 30
+    },
+    "consumedNonces": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 1000,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256,
+        "pattern": "\\S"
+      }
+    },
+    "consumedReceipts": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 1000,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "category": {
+      "enum": ["feature", "bug", "refactor", "docs"]
+    },
+    "candidateSequence": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

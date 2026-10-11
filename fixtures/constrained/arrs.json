@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "0.1",
+  "project": {
+    "name": "Task preview (constrained)",
+    "runtimes": {
+      "node": ">=22"
+    }
+  },
+  "commands": {
+    "setup": {
+      "argv": ["node", "--version"]
+    },
+    "dev": {
+      "argv": ["node", "src/application/main.mjs", "Inspect drift"]
+    },
+    "check": {
+      "argv": ["node", "../../dist/cli.js", "gate"]
+    },
+    "test": {
+      "argv": ["node", "--test", "test.mjs"]
+    },
+    "build": {
+      "argv": ["node", "build.mjs"]
+    }
+  },
+  "verifyTargets": {
+    "task-preview": {
+      "argv": ["node", "verify.mjs"]
+    }
+  },
+  "knowledge": {
+    "architecture": "docs/architecture",
+    "product": "docs/product",
+    "features": "docs/features",
+    "decisions": "docs/adr"
+  },
+  "architecture": {
+    "policy": ".agent/policies/architecture.json"
+  },
+  "riskPolicy": ".agent/policies/risk.json",
+  "proof": {
+    "requiredChecks": ["check", "test", "build"],
+    "behavioralRequiredFrom": "R1",
+    "evidenceDir": ".arrs/evidence"
+  },
+  "skills": {
+    "path": ".agent/skills"
+  },
+  "ci": {
+    "workflow": ".github/workflows/ci.yml"
+  },
+  "security": {
+    "exceptions": ".agent/policies/exceptions.json"
+  }
+}

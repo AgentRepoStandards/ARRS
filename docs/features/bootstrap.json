@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "0.1",
+  "id": "bootstrap",
+  "goal": "Initialize existing or empty repositories while preserving user-owned conventions.",
+  "owners": ["workflows"],
+  "entryPoints": ["src/cli.ts"],
+  "implementation": ["src/workflows/init.ts", "src/workflows/adopt.ts", "assets"],
+  "boundaries": ["workflows", "assets", "cli"],
+  "dependencies": [],
+  "domainTerms": ["Maturity level", "Proof Contract", "Feature Map"],
+  "invariants": [
+    "Existing bytes are preserved.",
+    "Missing commands are actionable configuration requirements.",
+    "Unconfigured architecture setup is schema-valid and never qualifies as a constraint.",
+    "The generated and shared runners retain owned command groups through bounded timeout, output-limit and cancellation cleanup even if the leader closes first.",
+    "Unsupported CLI action flags fail before repository mutation or execution; only init accepts dry-run.",
+    "Missing scoped evidence protection is generated despite root negations; existing ignore bytes are preserved and unsafe conventions are actionable.",
+    "Verification targets must be explicitly owned configuration entries; absent inherited names cannot satisfy maps, readiness or command execution, while valid own names retain literal argv.",
+    "Guided adoption planning is deterministic and read-only; supplied facts and discovered candidates remain distinct, and separate application preserves unrelated bytes, requires current snapshots and pre-change authorization, and retains originals for reviewable recovery."
+  ],
+  "sensitivity": "internal",
+  "acceptance": [
+    "One capability can be proposed and configured through reviewed exact-byte operations without executing application commands or claiming behavioral evidence.",
+    "CLI init and dry-run report actionable missing commands while preserving existing instruction, configuration and policy bytes across repeated invocations.",
+    "Initializing empty architecture creates valid incomplete setup; doctor and audit cannot award enforced constraints until real modules and a forbidden edge are configured.",
+    "The configured runner preserves literal argument values and underlying exit status, and reports unavailable commands, bounded timeout and output-limit failures."
+  ],
+  "verification": {
+    "target": "bootstrap"
+  },
+  "risk": "R2",
+  "related": [
+    "docs/spec/0.1.md",
+    "docs/architecture/README.md",
+    "docs/adoption.md",
+    "docs/adr/0006-guided-adoption.md",
+    "docs/qualification/reference-behaviors.md"
+  ]
+}

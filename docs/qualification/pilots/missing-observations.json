@@ -1,0 +1,167 @@
+{
+  "protocolVersion": "pilot-0.1",
+  "kind": "control-fixture",
+  "studyId": "missing-data-control",
+  "targetTaskCount": 30,
+  "hostedCI": "manual-disabled",
+  "pilots": [
+    {
+      "id": "pilot-1",
+      "context": "established",
+      "recruitment": "outstanding",
+      "authorizationReference": null
+    },
+    {
+      "id": "pilot-2",
+      "context": "smaller-newer",
+      "recruitment": "outstanding",
+      "authorizationReference": null
+    },
+    {
+      "id": "pilot-3",
+      "context": "legacy-other-language",
+      "recruitment": "outstanding",
+      "authorizationReference": null
+    }
+  ],
+  "tasks": [
+    {
+      "id": "synthetic-baseline",
+      "pilotId": "pilot-1",
+      "category": "feature",
+      "risk": "R1",
+      "scope": ["src/domain"],
+      "workflow": "baseline",
+      "inclusion": "included",
+      "selectionReason": "eligible",
+      "tools": ["fixture-tool"],
+      "observationWindow": {
+        "plannedDays": 14,
+        "completedDays": 14,
+        "complete": true
+      },
+      "observations": {
+        "setupActiveSeconds": 180,
+        "contextInterventions": 2,
+        "firstPassVerification": false,
+        "verificationRetries": 1,
+        "reviewActiveSeconds": 90,
+        "reviewRejected": true,
+        "reverted": false,
+        "escapedDefects": 0,
+        "elapsedSeconds": 1200
+      },
+      "confounders": [],
+      "taskReference": null,
+      "attempts": [],
+      "selectedAttempt": null,
+      "metricsReferences": []
+    },
+    {
+      "id": "synthetic-assisted",
+      "pilotId": "pilot-1",
+      "category": "feature",
+      "risk": "R1",
+      "scope": ["src/domain"],
+      "workflow": "arrs-assisted",
+      "inclusion": "included",
+      "selectionReason": "eligible",
+      "tools": ["fixture-tool"],
+      "observationWindow": {
+        "plannedDays": 14,
+        "completedDays": 2,
+        "complete": false
+      },
+      "observations": {
+        "setupActiveSeconds": 240,
+        "contextInterventions": 1,
+        "firstPassVerification": true,
+        "verificationRetries": 0,
+        "reviewActiveSeconds": null,
+        "reviewRejected": null,
+        "reverted": null,
+        "escapedDefects": null,
+        "elapsedSeconds": 900
+      },
+      "confounders": [],
+      "taskReference": null,
+      "attempts": [],
+      "selectedAttempt": null,
+      "metricsReferences": []
+    },
+    {
+      "id": "synthetic-mismatch",
+      "pilotId": "pilot-1",
+      "category": "bug",
+      "risk": "R2",
+      "scope": ["src/domain"],
+      "workflow": "arrs-assisted",
+      "inclusion": "included",
+      "selectionReason": "eligible",
+      "tools": ["fixture-tool"],
+      "observationWindow": {
+        "plannedDays": 7,
+        "completedDays": 2,
+        "complete": false
+      },
+      "observations": {
+        "setupActiveSeconds": null,
+        "contextInterventions": null,
+        "firstPassVerification": null,
+        "verificationRetries": null,
+        "reviewActiveSeconds": null,
+        "reviewRejected": null,
+        "reverted": null,
+        "escapedDefects": null,
+        "elapsedSeconds": null
+      },
+      "confounders": [],
+      "taskReference": null,
+      "attempts": [],
+      "selectedAttempt": null,
+      "metricsReferences": []
+    },
+    {
+      "id": "synthetic-excluded",
+      "pilotId": "pilot-1",
+      "category": "feature",
+      "risk": "R1",
+      "scope": ["src/domain"],
+      "workflow": "baseline",
+      "inclusion": "excluded",
+      "selectionReason": "no-access",
+      "tools": ["fixture-tool"],
+      "observationWindow": {
+        "plannedDays": 14,
+        "completedDays": 2,
+        "complete": false
+      },
+      "observations": {
+        "setupActiveSeconds": null,
+        "contextInterventions": null,
+        "firstPassVerification": null,
+        "verificationRetries": null,
+        "reviewActiveSeconds": null,
+        "reviewRejected": null,
+        "reverted": null,
+        "escapedDefects": null,
+        "elapsedSeconds": null
+      },
+      "confounders": [],
+      "taskReference": null,
+      "attempts": [],
+      "selectedAttempt": null,
+      "metricsReferences": []
+    }
+  ],
+  "comparisons": [
+    {
+      "baselineTask": "synthetic-baseline",
+      "assistedTask": "synthetic-assisted"
+    },
+    {
+      "baselineTask": "synthetic-baseline",
+      "assistedTask": "synthetic-mismatch"
+    }
+  ]
+}

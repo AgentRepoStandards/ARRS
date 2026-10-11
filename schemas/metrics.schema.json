@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://arrs.dev/schemas/0.1/metrics.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "task",
+    "category",
+    "risk",
+    "scopeSize",
+    "workflow",
+    "outcome",
+    "failureCategories",
+    "recordedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task": {
+      "type": "string",
+      "minLength": 1
+    },
+    "category": {
+      "enum": ["bug", "feature", "refactor", "docs"]
+    },
+    "risk": {
+      "enum": ["R0", "R1", "R2", "R3", "R4"]
+    },
+    "scopeSize": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "agent": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "firstPassVerification",
+        "humanInterventions",
+        "reviewRejected",
+        "reverted",
+        "escapedDefects",
+        "architectureGateFailures",
+        "verificationCompleteness"
+      ],
+      "properties": {
+        "firstPassVerification": {
+          "type": "boolean"
+        },
+        "humanInterventions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reviewRejected": {
+          "type": "boolean"
+        },
+        "reverted": {
+          "type": "boolean"
+        },
+        "escapedDefects": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "architectureGateFailures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verificationCompleteness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "failureCategories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "recordedAt": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T"
+    }
+  }
+}

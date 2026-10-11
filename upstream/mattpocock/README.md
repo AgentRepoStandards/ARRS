@@ -1,0 +1,48 @@
+# Pinned upstream compatibility assessment
+
+Inspected directly on 2026-10-05: [mattpocock/skills](https://github.com/mattpocock/skills/tree/4588b32ecab9ecc9fc8cc6b6c5e7d675b6004b0d), commit `4588b32ecab9ecc9fc8cc6b6c5e7d675b6004b0d`, package version 1.3.1, MIT. Copyright and permission text are preserved in `source/LICENSE` and `../../NOTICE`. This repository copies a pristine reference snapshot, never executes it (symlink blob targets are stored as inert regular text with git modes recorded), and maintains its ARRS-derived workflows separately.
+
+`compatibility.json` is the complete structured matrix: purpose, invocation, inputs, outputs, dependencies, repository/tracker assumptions, minimal-context fit, risk, proof and architecture/verification compatibility. Every discovered skill has an explicit disposition, including misc/draft and optional productivity material. The full source inventory in `manifest.json` detects additions, deletions and changed supporting references, not only known skill names. `packaging-blobs.json` preserves exact inert bytes and hashes for inventory paths npm omits from tarballs. A declared fallback is used only when a physical source file is missing, and must match its original inventory hash. Existing physical bytes still undergo their own integrity check.
+
+| Upstream workflow | Disposition | ARRS destination | Reason |
+| --- | --- | --- | --- |
+| [ask-matt](source/skills/engineering/ask-matt/SKILL.md) | REPLACE | docs/skills.md selector | Docs/skills.md is the compact ARRS selector; no vendor-specific clearing or mandatory skill invocation. |
+| [code-review](source/skills/engineering/code-review/SKILL.md) | ADAPT | arrs-review | Add invariants, risk/security, behavioral proof, scope hashes and control-weakening review; serial explicit axes are supported. |
+| [codebase-design](source/skills/engineering/codebase-design/SKILL.md) | ADAPT | arrs-design | Retain interface reasoning, align terms with repo domain and enforce architecture policies with negative gate evidence. |
+| [diagnosing-bugs](source/skills/engineering/diagnosing-bugs/SKILL.md) | ADAPT | arrs-debug | Add risk and bug proof; retain original unchanged scenario, explicit before/after evidence and access blockers. |
+| [domain-modeling](source/skills/engineering/domain-modeling/SKILL.md) | ADAPT | arrs-domain | Use configured product pointers, synchronize Feature Maps/invariants and classify public-contract changes. |
+| [grill-with-docs](source/skills/engineering/grill-with-docs/SKILL.md) | ADAPT | arrs-spec | Fold into bounded specification; inspect facts autonomously and expose only genuinely unresolved human decisions. |
+| [implement-spec](source/skills/engineering/implement-spec/SKILL.md) | ADAPT | arrs-implement | Consolidate with implementation; optional safe parallel scheduling, serial fallback, bounded scope and required proof/review. |
+| [implement](source/skills/engineering/implement/SKILL.md) | ADAPT | arrs-implement | Add locate/map/risk/paved-road/static/test/behavior/proof sequence and authorized publication boundaries. |
+| [improve-codebase-architecture](source/skills/engineering/improve-codebase-architecture/SKILL.md) | ADAPT | arrs-gardener | Gardener report separates observation/evidence/enforcement/change; bounded selected work gets refactor proof. |
+| [pr](source/skills/engineering/pr/SKILL.md) | WRAP | arrs-review | Use independently written review/report workflow with Proof Contract links and risk; preserve upstream Dex Horthy credit in reference snapshot. |
+| [prototype](source/skills/engineering/prototype/SKILL.md) | ADAPT | arrs-prototype | Bound scratch experiment by risk; capture runnable evidence and accepted decision, then implement through normal proof gates. |
+| [research](source/skills/engineering/research/SKILL.md) | ADAPT | arrs-research | Pin sources/version/date, record uncertainty and architectural/risk constraints; delegation optional. |
+| [retro](source/skills/engineering/retro/SKILL.md) | ADAPT | arrs-gardener | Use Gardener and local metric/proof evidence; mechanical prevention precedes new instructions. |
+| [setup-matt-pocock-skills](source/skills/engineering/setup-matt-pocock-skills/SKILL.md) | REPLACE | arrs-adopt | Use deterministic non-destructive arrs init/install, configured knowledge paths and neutral work-state mapping. |
+| [tdd](source/skills/engineering/tdd/SKILL.md) | ADAPT | arrs-tdd | Retain observable tests; integrate category before/after proof, risk and full behavior verification; guarded refactor is allowed. |
+| [to-spec](source/skills/engineering/to-spec/SKILL.md) | ADAPT | arrs-spec | Require goal/acceptance/maps/invariants/boundaries/verification/risk/unresolved decisions; save local artifact before authorized tracker publication. |
+| [to-tickets](source/skills/engineering/to-tickets/SKILL.md) | ADAPT | arrs-slice | Retain vertical slices and expand-contract; add durable context pointers, risk, gates, invariants and verification target. |
+| [triage](source/skills/engineering/triage/SKILL.md) | ADAPT | arrs-triage | Assess context sufficiency, risk, blockers, agent suitability and human decisions; use neutral state model with separate risk/verification. |
+| [wayfinder](source/skills/engineering/wayfinder/SKILL.md) | ADAPT | arrs-spec | Consolidate into persistent specification/plan with owned unresolved decisions and local-first pointers; executable slices follow readiness. |
+| [wizard](source/skills/engineering/wizard/SKILL.md) | EXCLUDE | Optional/excluded | v0.1 has no production deployment or general credential/provisioning wizard; use explicit human-required work and scoped external tooling. |
+| [chief-of-staff](source/skills/in-progress/chief-of-staff/SKILL.md) | EXCLUDE | Optional/excluded | Perpetual orchestration and scheduling are beyond v0.1; bounded execution plans and Gardener cover substrate improvement. |
+| [claude-handoff](source/skills/in-progress/claude-handoff/SKILL.md) | REPLACE | arrs-handoff | Save durable portable handoff instead; optional harness dispatch is separate. |
+| [loop-me](source/skills/in-progress/loop-me/SKILL.md) | EXCLUDE | Optional/excluded | General productivity automation is outside repository engineering standard. |
+| [setup-ts-deep-modules](source/skills/in-progress/setup-ts-deep-modules/SKILL.md) | ADAPT | arrs-design | Retain pass/fail/pass enforcement proof while using configured modules and ARRS TS/JS adapter instead of a universal package shape. |
+| [writing-beats](source/skills/in-progress/writing-beats/SKILL.md) | EXCLUDE | Optional/excluded | Non-engineering prose workflow outside pack. |
+| [writing-fragments](source/skills/in-progress/writing-fragments/SKILL.md) | EXCLUDE | Optional/excluded | Non-engineering prose workflow outside pack. |
+| [writing-shape](source/skills/in-progress/writing-shape/SKILL.md) | EXCLUDE | Optional/excluded | Non-engineering prose workflow outside pack. |
+| [git-guardrails-claude-code](source/skills/misc/git-guardrails-claude-code/SKILL.md) | EXCLUDE | Optional/excluded | ARRS defines neutral risk/authorization rules; harness-specific guardrails remain optional and require their own adapter tests. |
+| [migrate-to-shoehorn](source/skills/misc/migrate-to-shoehorn/SKILL.md) | EXCLUDE | Optional/excluded | Optional repo-specific migration, not a general ARRS requirement; dependency and behavior proof apply when used. |
+| [scaffold-exercises](source/skills/misc/scaffold-exercises/SKILL.md) | EXCLUDE | Optional/excluded | Domain-specific scaffold is outside standard; repository schema/gates can govern such work separately. |
+| [setup-pre-commit](source/skills/misc/setup-pre-commit/SKILL.md) | REPLACE | arrs-adopt | ARRS adoption uses configured check/CI gates; optional repository-owned hooks require justified dependencies. |
+| [grill-me](source/skills/productivity/grill-me/SKILL.md) | EXCLUDE | Optional/excluded | ARRS specification captures repository decisions; standalone productivity interview stays optional. |
+| [grilling](source/skills/productivity/grilling/SKILL.md) | ADAPT | arrs-spec | Limit to genuinely human-owned decisions; routine facts/implementation choices resolved by authorized agent, with durable unresolved decisions. |
+| [handoff](source/skills/productivity/handoff/SKILL.md) | ADAPT | arrs-handoff | Persist objective/revision/maps/risk/evidence/blockers/next action with validated pointers beside the plan. |
+| [teach](source/skills/productivity/teach/SKILL.md) | EXCLUDE | Optional/excluded | Learning workflow is outside v0.1 engineering substrate. |
+| [to-questionnaire](source/skills/productivity/to-questionnaire/SKILL.md) | EXCLUDE | Optional/excluded | Human-required decisions can be captured in a plan; external outreach is not automated by ARRS. |
+| [wait-what](source/skills/productivity/wait-what/SKILL.md) | EXCLUDE | Optional/excluded | Communication aid remains optional; ARRS context and handoffs encode explicit meaning. |
+| [writing-for-agents](source/skills/productivity/writing-for-agents/SKILL.md) | ADAPT | arrs-author | Add ARRS contract/risk/proof integration, separate provenance and static pack tests; optional invocation metadata. |
+
+References were assessed as a source bundle with each skill, including test/mocking guidance, domain templates, triage briefs, source scripts and invocation metadata. `skills/provenance.json` lists materially derived entry-point source hashes; the snapshot inventory retains every supporting hash. Structural pack tests check workflow contracts and provenance, not a guarantee of any model’s compliance. Actual behavior is assessed by executed task proof and review.

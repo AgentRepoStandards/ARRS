@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "0.1",
+  "states": {
+    "needs-triage": "arrs:triage",
+    "needs-information": "arrs:information",
+    "ready-for-agent": "arrs:ready",
+    "in-progress": "arrs:active",
+    "verification-failed": "arrs:verification-failed",
+    "ready-for-review": "arrs:review",
+    "human-required": "arrs:human",
+    "completed": "arrs:completed",
+    "rejected": "arrs:rejected"
+  }
+}

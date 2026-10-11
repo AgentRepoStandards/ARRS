@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+// Works with commonjs, module and unspecified package types on Node >=22.
+(async () => {
+  const {readFileSync}=await import('node:fs');
+  const {dirname,join,resolve}=await import('node:path');
+  const {pathToFileURL}=await import('node:url');
+  const root=dirname(resolve(process.argv[1]));
+  const {default:standalone}=await import(pathToFileURL(join(root,'.agent/repo.cjs')).href);
+  const [name,target,...extra]=process.argv.slice(2);
+  if(!name || name==='--help')console.log('Usage: ./repo setup|dev|check|test|verify [target]|build');
+  else {
+    if(extra.length)throw new Error('Unexpected extra arguments. Configure argv in arrs.json.');
+    const config=JSON.parse(readFileSync(join(root,'arrs.json'),'utf8'));
+    const result=await standalone.execute(root,standalone.resolveCommand(config,name,target),{stream:true});
+    if(result.exitCode)console.error(`ARRS: command exited ${result.exitCode}.`);
+    process.exitCode=result.exitCode;
+  }
+})().catch(error=>{console.error(`ARRS: ${error.message}`);process.exitCode=1;});

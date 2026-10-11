@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1",
+  "exceptions": [],
+  "dependencies": [
+    {
+      "name": "ajv",
+      "reason": "Compile versioned JSON Schemas with strict validation rather than parallel handwritten validators."
+    },
+    {
+      "name": "typescript",
+      "reason": "Strict compilation and AST-based JavaScript/TypeScript dependency enforcement at runtime."
+    },
+    {
+      "name": "@types/node",
+      "reason": "Type checked Node process, filesystem and command boundaries during development."
+    },
+    {
+      "name": "prettier",
+      "reason": "Deterministic format check shared by developer commands and CI."
+    },
+    {
+      "name": "@modelcontextprotocol/sdk",
+      "reason": "Official MCP framing, negotiation, typed tools and real stdio client conformance; imported only for the optional local adapter. HTTP/auth transitive packages are the acknowledged SDK distribution tradeoff, not exposed server transports."
+    }
+  ]
+}

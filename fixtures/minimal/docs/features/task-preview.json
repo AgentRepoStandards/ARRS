@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.1",
+  "id": "task-preview",
+  "goal": "Preview an actionable work queue task without writing persistent state.",
+  "owners": ["application"],
+  "entryPoints": ["src/application/main.mjs"],
+  "implementation": ["src/application", "src/domain"],
+  "boundaries": ["domain", "application"],
+  "dependencies": [],
+  "domainTerms": ["Task", "Queue state"],
+  "invariants": ["Empty titles are rejected.", "Queued task titles are normalized."],
+  "sensitivity": "none",
+  "acceptance": ["Valid tasks are normalized and empty titles fail."],
+  "verification": {
+    "target": "task-preview"
+  },
+  "risk": "R1",
+  "related": [
+    "docs/product/README.md",
+    "docs/architecture/README.md",
+    "docs/adr/0001-domain.md"
+  ]
+}
