@@ -1681,12 +1681,29 @@ test("nested reserved-name source identities are pinned while exact excluded roo
       symlinkSync(join(source, "outside-dependencies"), join(source, "node_modules"));
     },
   });
+  const retainedPath = `${source}-retained-nested-state.txt`;
   try {
     assert.equal(inspectPolicyBaseline(root, source).sha256, baseline.sha256);
     const path = join(source, "src/domain/node_modules/state.txt");
     const bytes = readFileSync(path);
+    const originalIdentity = lstatSync(path, { bigint: true });
+    // Keep the original object alive on the same volume, outside the baseline inventory.
+    linkSync(path, retainedPath);
+    assert.equal(inspectPolicyBaseline(root, source).sha256, baseline.sha256);
     unlinkSync(path);
     writeFileSync(path, bytes);
+    const retainedIdentity = lstatSync(retainedPath, { bigint: true });
+    const replacementIdentity = lstatSync(path, { bigint: true });
+    assert.deepEqual(
+      [retainedIdentity.dev, retainedIdentity.ino],
+      [originalIdentity.dev, originalIdentity.ino],
+    );
+    assert.notDeepEqual(
+      [replacementIdentity.dev, replacementIdentity.ino],
+      [retainedIdentity.dev, retainedIdentity.ino],
+    );
+    assert.deepEqual(readFileSync(path), bytes);
+    assert.notEqual(inspectPolicyBaseline(root, source).sha256, baseline.sha256);
     const before = snapshotFixtureTree(root);
     const rejected = invoke(root, [
       "proof",
@@ -1700,6 +1717,7 @@ test("nested reserved-name source identities are pinned while exact excluded roo
     assert.equal(existsSync(join(root, "EXECUTED")), false);
     assert.deepEqual(snapshotFixtureTree(root), before);
   } finally {
+    rmSync(retainedPath, { force: true });
     rmSync(root, { recursive: true, force: true });
     rmSync(source, { recursive: true, force: true });
   }

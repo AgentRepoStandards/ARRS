@@ -6,19 +6,46 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { packageRoot, makeFixture, writeJson, readJson } from "./helpers.mjs";
 
+function npmProcessDiagnostic(stage, result, startedAt) {
+  return JSON.stringify(
+    {
+      stage,
+      elapsedMs: Math.round(performance.now() - startedAt),
+      timeoutMs: 60000,
+      status: result.status,
+      signal: result.signal,
+      error: result.error
+        ? {
+            name: result.error.name,
+            message: result.error.message,
+            code: result.error.code,
+            errno: result.error.errno,
+            syscall: result.error.syscall,
+          }
+        : null,
+      stdout: result.stdout,
+      stderr: result.stderr,
+    },
+    null,
+    2,
+  );
+}
+
 test("packed install excludes development dependencies and retains executable schemas, docs, local MCP and offline skills", async () => {
   const root = mkdtempSync(join(tmpdir(), "arrs-package-"));
   try {
     const npmCli = process.env.npm_execpath;
     assert.ok(npmCli, "Run package integration through npm test so npm_cli is known");
+    const packStartedAt = performance.now();
     const pack = spawnSync(
       process.execPath,
       [npmCli, "pack", "--ignore-scripts", "--pack-destination", root, "--json"],
       { cwd: packageRoot, encoding: "utf8", timeout: 60000 },
     );
-    assert.equal(pack.status, 0, pack.stdout + pack.stderr);
+    assert.equal(pack.status, 0, npmProcessDiagnostic("npm pack", pack, packStartedAt));
     const tarball = join(root, JSON.parse(pack.stdout)[0].filename);
     const installed = join(root, "installation");
+    const installStartedAt = performance.now();
     const install = spawnSync(
       process.execPath,
       [
@@ -34,7 +61,11 @@ test("packed install excludes development dependencies and retains executable sc
       ],
       { encoding: "utf8", timeout: 60000 },
     );
-    assert.equal(install.status, 0, install.stdout + install.stderr);
+    assert.equal(
+      install.status,
+      0,
+      npmProcessDiagnostic("npm install", install, installStartedAt),
+    );
     const distribution = join(installed, "node_modules/@arrs/cli"),
       executable = join(distribution, "dist/cli.js");
     assert.ok(
