@@ -335,9 +335,23 @@ function collect(rootInput: string, baseInput: string): ChangesetSnapshot {
     git(root, ["rev-parse", "--is-inside-work-tree"]).toString("utf8").trim() !== "true"
   )
     throw new CollectionError("A Git worktree is required", "unsupported");
+  const worktreeRoot = realpathSync(
+    git(root, ["rev-parse", "--show-toplevel"]).toString("utf8").trim(),
+  );
+  const stat = lstatSync(root, { bigint: true }),
+    worktreeStat = lstatSync(worktreeRoot, { bigint: true });
+  // Windows short/case spellings may survive legacy realpath normalization.
+  // Distinct spellings qualify only through nonzero directory identity.
   if (
-    realpathSync(git(root, ["rev-parse", "--show-toplevel"]).toString("utf8").trim()) !==
-    root
+    !stat.isDirectory() ||
+    !worktreeStat.isDirectory() ||
+    (worktreeRoot !== root &&
+      (stat.dev === 0n ||
+        stat.ino === 0n ||
+        worktreeStat.dev === 0n ||
+        worktreeStat.ino === 0n ||
+        stat.dev !== worktreeStat.dev ||
+        stat.ino !== worktreeStat.ino))
   )
     throw new CollectionError("Scope root must be the Git worktree root", "unsupported");
   const base = resolveCommit(root, baseInput),
@@ -350,7 +364,6 @@ function collect(rootInput: string, baseInput: string): ChangesetSnapshot {
       .toString("utf8")
       .trim(),
   );
-  const stat = lstatSync(root, { bigint: true });
   const gitStat = lstatSync(gitDirectory, { bigint: true }),
     commonStat = lstatSync(commonDirectory, { bigint: true });
   const repository = {

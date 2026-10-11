@@ -1,0 +1,13 @@
+# Native Git fixture execution
+
+The fifth public candidate passed all eight full suites and real locked package installs. Both Windows Node 24 runs subsequently returned a null native Git test status after approximately the existing 120-second child limit. Their native error and signal were not recorded, so the precise termination cause remains unestablished. Windows Node 22 completed the same standalone cases in approximately 118 and 108 seconds.
+
+Prepare an equivalent fixture refactor while preserving every existing case, assertion, native CLI/Git argument vector, repository command binding and deadline. The 28 changeset bodies and their actual before/finish/freshness/protected-policy scenarios remain required. All protected baselines and prior evidence remain immutable; each case must own independent regular source and Git files.
+
+Review a complete private seed manifest that can materialize exact bytes, directories and modes while retaining the full destination content inventory, separate BigInt identities and final pristine-seed check. Only inert default Git hook sample files may be removed before the initial seed inventory; active hooks and native Git objects, refs and index remain intact. Review bounded concurrent execution of the fixture's two independent native JavaScript syntax checks, retaining both existing argument vectors and strict failure propagation. These are preparation and scheduling changes with no established timing benefit until measured.
+
+The reviewed implementation retains every native seed path, including all hook samples. It materializes complete private file buffers and permission modes into fresh entries, checks the full actual destination byte inventory and complete path/type/mode inventory, and rechecks the retained seed bytes, structure and identities before cleanup. The generated build awaits both actual syntax-check children and treats every callback error as failure; it reports success only after both checks pass.
+
+Capture the actual unchanged standard verification before implementation. After the reviewed change, capture static checks, every full-suite test, the same standard verification and build against the original immutable protected baseline. Native hosted Ubuntu/Windows and Node 22/24 qualification remains required. The runtime correction still requires new overall R3 human implementation acceptance before main merge.
+
+Packed-consumer coverage remains limited to qualified locked versions; cold-cache installation and latest registry-range resolution are unqualified. Windows parent-directory power-loss durability remains unqualified. This plan does not establish the historical process termination cause, weaken checks or claim completed hosted qualification or acceptance.
