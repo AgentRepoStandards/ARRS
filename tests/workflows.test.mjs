@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import { spawnSync } from "node:child_process";
 import { strict as assert } from "node:assert";
-import {
+import fs, {
   existsSync,
   lstatSync,
   mkdtempSync,
@@ -13,6 +13,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { syncBuiltinESMExports } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { audit } from "../dist/core/audit.js";
@@ -1273,6 +1274,136 @@ function observationFixture(task, values, extra = {}) {
     values,
     ...extra,
   };
+}
+
+function outcomePublicationFault(t, platform, operation, code) {
+  const root = makeFixture(3);
+  const record = lifecycleFixture(`publication-${platform}-${operation}-${code}`);
+  const parent = join(root, ".arrs/metrics/outcomes");
+  const final = join(parent, `${record.id}.json`);
+  const native = {
+    open: fs.openSync,
+    close: fs.closeSync,
+    sync: fs.fsyncSync,
+    link: fs.linkSync,
+  };
+  const platformDescriptor = Object.getOwnPropertyDescriptor(process, "platform");
+  const injected = Object.assign(new Error(`fixture ${operation} ${code}`), { code });
+  const descriptors = new Map();
+  const events = [];
+  const pendingPayloads = [];
+  const mocks = [];
+  let fileFlushed = false;
+  t.after(() => {
+    try {
+      assert.equal(descriptors.size, 0, "publication must close every opened handle");
+    } finally {
+      for (const descriptor of descriptors.keys()) native.close(descriptor);
+      for (const mock of mocks.reverse()) mock.mock.restore();
+      Object.defineProperty(process, "platform", platformDescriptor);
+      syncBuiltinESMExports();
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+  mocks.push(
+    t.mock.method(fs, "openSync", (path, flags, ...args) => {
+      const kind =
+        path === parent
+          ? "parent"
+          : flags === "wx" && String(path).startsWith(join(parent, ".pending-"))
+            ? "file"
+            : undefined;
+      if (!kind) return native.open(path, flags, ...args);
+      if (kind === "parent" && operation === "parent-open") throw injected;
+      const descriptor = native.open(path, flags, ...args);
+      descriptors.set(descriptor, kind);
+      if (kind === "file") fileFlushed = false;
+      events.push(`open:${kind}`);
+      return descriptor;
+    }),
+    t.mock.method(fs, "fsyncSync", (descriptor) => {
+      const kind = descriptors.get(descriptor);
+      assert.ok(kind, "only publication-owned descriptors may be injected");
+      events.push(`sync:${kind}`);
+      if (operation === `${kind}-sync`) throw injected;
+      native.sync(descriptor);
+      if (kind === "file") fileFlushed = true;
+    }),
+    t.mock.method(fs, "linkSync", (temporary, target) => {
+      assert.equal(fileFlushed, true, "file bytes must be flushed before publication");
+      assert.equal(target, final);
+      const bytes = readFileSync(temporary);
+      assert.equal(JSON.parse(bytes).id, record.id);
+      pendingPayloads.push(bytes);
+      events.push("link");
+      if (operation === "link") throw injected;
+      return native.link(temporary, target);
+    }),
+    t.mock.method(fs, "closeSync", (descriptor) => {
+      const kind = descriptors.get(descriptor);
+      if (kind) events.push(`close:${kind}`);
+      native.close(descriptor);
+      descriptors.delete(descriptor);
+    }),
+  );
+  Object.defineProperty(process, "platform", { ...platformDescriptor, value: platform });
+  syncBuiltinESMExports();
+  return { root, record, parent, final, events, pendingPayloads, injected };
+}
+
+test("outcome publication flushes file bytes and tolerates only Windows parent-fsync EPERM", (t) => {
+  const fixture = outcomePublicationFault(t, "win32", "parent-sync", "EPERM");
+  const result = outcomes.appendOutcome(fixture.root, fixture.record);
+  assert.equal(result.recorded, true);
+  assert.deepEqual(fixture.events, [
+    "open:file",
+    "sync:file",
+    "close:file",
+    "link",
+    "open:parent",
+    "sync:parent",
+    "close:parent",
+  ]);
+  const original = readFileSync(fixture.final);
+  assert.deepEqual(original, fixture.pendingPayloads[0]);
+  assert.deepEqual(outcomes.readOutcomeRecords(fixture.root), [fixture.record]);
+  assert.equal(outcomes.appendOutcome(fixture.root, fixture.record).recorded, false);
+  assert.throws(
+    () =>
+      outcomes.appendOutcome(fixture.root, {
+        ...fixture.record,
+        failureCategories: ["verification-failed"],
+      }),
+    /Conflicting outcome idempotency key/,
+  );
+  assert.deepEqual(readFileSync(fixture.final), original);
+  assert.deepEqual(readdirSync(fixture.parent), [`${fixture.record.id}.json`]);
+});
+
+for (const [platform, operation, code, committed] of [
+  ["win32", "file-sync", "EPERM", false],
+  ["win32", "parent-sync", "EIO", true],
+  ["linux", "parent-sync", "EPERM", true],
+  ["win32", "parent-open", "EPERM", true],
+  ["win32", "link", "EPERM", false],
+]) {
+  test(`outcome publication rejects ${platform} ${operation} ${code} without masking failure`, (t) => {
+    const fixture = outcomePublicationFault(t, platform, operation, code);
+    assert.throws(
+      () => outcomes.appendOutcome(fixture.root, fixture.record),
+      (error) => error === fixture.injected,
+    );
+    assert.equal(existsSync(fixture.final), committed);
+    if (committed) {
+      assert.deepEqual(readFileSync(fixture.final), fixture.pendingPayloads[0]);
+      assert.deepEqual(outcomes.readOutcomeRecords(fixture.root), [fixture.record]);
+    }
+    if (operation === "file-sync") assert.equal(fixture.events.includes("link"), false);
+    assert.deepEqual(
+      readdirSync(fixture.parent),
+      committed ? [`${fixture.record.id}.json`] : [],
+    );
+  });
 }
 
 test("lifecycle CLI retains a failed first attempt and passing retry without summary/validation duplicates", () => {

@@ -11,6 +11,7 @@ import {
   mkdtempSync,
   readFileSync,
   readdirSync,
+  realpathSync,
   renameSync,
   rmSync,
   symlinkSync,
@@ -127,6 +128,68 @@ function gitShellCommand(...args) {
     .map((value) => `'${value.replaceAll("\\", "/").replaceAll("'", "'\\''")}'`)
     .join(" ");
 }
+function reportedRootFixture(root, reportedRoot, identities = {}) {
+  const preload = join(root, ".git", "reported-root-preload.mjs");
+  const canonicalIdentities = {};
+  for (const [path, values] of Object.entries(identities)) {
+    const canonical = realpathSync.native(path);
+    if (canonicalIdentities[canonical])
+      assert.deepEqual(canonicalIdentities[canonical], values);
+    canonicalIdentities[canonical] = values;
+  }
+  const marker = join(root, ".git", "identity-overrides-consumed.json");
+  // Model Windows realpath spelling aliases without changing the native Git
+  // argv, its other results, or the actual filesystem entries being compared.
+  writeFileSync(
+    preload,
+    `
+import childProcess from 'node:child_process';
+import fs from 'node:fs';
+import {syncBuiltinESMExports} from 'node:module';
+const reportedRoot = ${JSON.stringify(reportedRoot)};
+const identities = ${JSON.stringify(canonicalIdentities)};
+const consumed = new Set();
+const nativeSpawnSync = childProcess.spawnSync;
+const nativeRealpathSync = fs.realpathSync;
+const nativeLstatSync = fs.lstatSync;
+childProcess.spawnSync = (command, args, options) => {
+  const result = nativeSpawnSync(command, args, options);
+  if (command === 'git' && args.includes('--show-toplevel') && result.status === 0)
+    result.stdout = Buffer.from(reportedRoot + '\\n');
+  return result;
+};
+fs.realpathSync = (path, options) => String(path) === reportedRoot
+  ? reportedRoot
+  : nativeRealpathSync(path, options);
+fs.realpathSync.native = nativeRealpathSync.native;
+fs.lstatSync = (path, options) => {
+  const result = nativeLstatSync(path, options);
+  const canonical = result && Object.keys(identities).length
+    ? nativeRealpathSync.native(path)
+    : null;
+  const values = identities[canonical];
+  if (result && values) {
+    consumed.add(canonical);
+    for (const key of ['dev', 'ino']) {
+      if (values[key] !== undefined)
+        result[key] = options?.bigint ? BigInt(values[key]) : Number(values[key]);
+    }
+  }
+  return result;
+};
+if (Object.keys(identities).length)
+  process.on('exit', () => fs.writeFileSync(${JSON.stringify(marker)}, JSON.stringify({
+    planned: Object.keys(identities).sort(), consumed: [...consumed].sort()
+  }), {flag: 'wx'}));
+syncBuiltinESMExports();
+`,
+  );
+  return preload;
+}
+function assertRootIdentityOverridesConsumed(root) {
+  const marker = readJson(root, ".git/identity-overrides-consumed.json");
+  assert.deepEqual(marker.consumed, marker.planned);
+}
 function snapshot(root, base) {
   return report(root, ["scope", "inspect", "--base", base]);
 }
@@ -149,6 +212,184 @@ function inventory(root) {
   visit(root);
   return hash.digest("hex");
 }
+
+test("Git worktree root accepts a different spelling of the same directory", () => {
+  const { root, base } = fixture();
+  const alias = `${root}/.arrs/..`;
+  const rootIdentity = statSync(root, { bigint: true });
+  const aliasIdentity = statSync(alias, { bigint: true });
+  assert.equal(aliasIdentity.dev, rootIdentity.dev);
+  assert.equal(aliasIdentity.ino, rootIdentity.ino);
+  const preload = reportedRootFixture(root, alias);
+  const before = inventory(root);
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    0,
+    process.env,
+    preload,
+  );
+  assert.equal(result.assurance, "git-complete");
+  assert.equal(result.base, base);
+  assert.deepEqual(result.layers, []);
+  assert.equal(inventory(root), before);
+});
+
+test("Git worktree root rejects a genuine nested directory", () => {
+  const { root, base } = fixture();
+  const nested = join(root, "src");
+  assert.notEqual(
+    statSync(nested, { bigint: true }).ino,
+    statSync(root, { bigint: true }).ino,
+  );
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    1,
+    process.env,
+    reportedRootFixture(root, nested),
+  );
+  assert.equal(result.assurance, "unestablished");
+  assert.match(result.diagnostics.join(";"), /Scope root must be the Git worktree root/);
+});
+
+test("Git worktree root rejects a genuine sibling directory", () => {
+  const { root, base } = fixture();
+  const sibling = mkdtempSync(join(tmpdir(), "arrs-sibling-"));
+  assert.notEqual(
+    statSync(sibling, { bigint: true }).ino,
+    statSync(root, { bigint: true }).ino,
+  );
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    1,
+    process.env,
+    reportedRootFixture(root, sibling),
+  );
+  assert.equal(result.assurance, "unestablished");
+  assert.match(result.diagnostics.join(";"), /Scope root must be the Git worktree root/);
+});
+
+test("Git worktree root keeps adjacent large inode identities distinct", () => {
+  const { root, base } = fixture();
+  const sibling = mkdtempSync(join(tmpdir(), "arrs-large-inode-sibling-"));
+  const preload = reportedRootFixture(root, sibling, {
+    [root]: { dev: "7", ino: "9007199254740992" },
+    [sibling]: { dev: "7", ino: "9007199254740993" },
+  });
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    1,
+    process.env,
+    preload,
+  );
+  assert.equal(result.assurance, "unestablished");
+  assert.match(result.diagnostics.join(";"), /Scope root must be the Git worktree root/);
+  assertRootIdentityOverridesConsumed(root);
+});
+
+test("Git worktree root rejects an alternate spelling when identity is unavailable", () => {
+  const { root, base } = fixture();
+  const alias = `${root}/.arrs/..`;
+  const preload = reportedRootFixture(root, alias, {
+    [root]: { dev: "0", ino: "0" },
+    [alias]: { dev: "0", ino: "0" },
+  });
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    1,
+    process.env,
+    preload,
+  );
+  assert.equal(result.assurance, "unestablished");
+  assert.match(result.diagnostics.join(";"), /Scope root must be the Git worktree root/);
+  assertRootIdentityOverridesConsumed(root);
+});
+
+test("Git worktree root preserves exact-path admission when identity is unavailable", () => {
+  const { root, base } = fixture();
+  const preload = reportedRootFixture(root, root, {
+    [root]: { dev: "0", ino: "0" },
+  });
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    0,
+    process.env,
+    preload,
+  );
+  assert.equal(result.assurance, "git-complete");
+  assertRootIdentityOverridesConsumed(root);
+});
+
+test("Git worktree root rejects matching inode numbers on different devices", () => {
+  const { root, base } = fixture();
+  const sibling = mkdtempSync(join(tmpdir(), "arrs-other-device-sibling-"));
+  const preload = reportedRootFixture(root, sibling, {
+    [root]: { dev: "7", ino: "13" },
+    [sibling]: { dev: "8", ino: "13" },
+  });
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    1,
+    process.env,
+    preload,
+  );
+  assert.equal(result.assurance, "unestablished");
+  assert.match(result.diagnostics.join(";"), /Scope root must be the Git worktree root/);
+  assertRootIdentityOverridesConsumed(root);
+});
+
+for (const [name, identity] of [
+  ["device", { dev: "0", ino: "13" }],
+  ["inode", { dev: "7", ino: "0" }],
+]) {
+  test(`Git worktree root rejects alternate spelling with only a zero ${name}`, () => {
+    const { root, base } = fixture();
+    const alias = `${root}/.arrs/..`;
+    const preload = reportedRootFixture(root, alias, {
+      [root]: identity,
+      [alias]: identity,
+    });
+    const result = report(
+      root,
+      ["scope", "inspect", "--base", base],
+      1,
+      process.env,
+      preload,
+    );
+    assert.equal(result.assurance, "unestablished");
+    assert.match(
+      result.diagnostics.join(";"),
+      /Scope root must be the Git worktree root/,
+    );
+    assertRootIdentityOverridesConsumed(root);
+  });
+}
+
+test("Git worktree root rejects a file even when reported identity matches", () => {
+  const { root, base } = fixture();
+  const sourceFile = join(root, "arrs.json");
+  assert.equal(statSync(sourceFile).isDirectory(), false);
+  const preload = reportedRootFixture(root, sourceFile, {
+    [root]: { dev: "7", ino: "13" },
+    [sourceFile]: { dev: "7", ino: "13" },
+  });
+  const result = report(
+    root,
+    ["scope", "inspect", "--base", base],
+    1,
+    process.env,
+    preload,
+  );
+  assert.equal(result.assurance, "unestablished");
+  assert.match(result.diagnostics.join(";"), /Scope root must be the Git worktree root/);
+  assertRootIdentityOverridesConsumed(root);
+});
 
 test("explicit committed scope passes with pinned base/HEAD and no writes", () => {
   const { root, base } = fixture();

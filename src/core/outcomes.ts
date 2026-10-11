@@ -248,6 +248,14 @@ function publishOutcome(
     const parent = openSync(safePath(root, directory), "r");
     try {
       fsyncSync(parent);
+    } catch (error) {
+      // Node cannot flush a read-only directory handle on Windows.
+      // File fsync failures and all other publication errors still propagate.
+      if (
+        process.platform !== "win32" ||
+        (error as NodeJS.ErrnoException).code !== "EPERM"
+      )
+        throw error;
     } finally {
       closeSync(parent);
     }
