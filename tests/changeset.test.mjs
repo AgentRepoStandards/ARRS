@@ -1,4 +1,4 @@
-import { test } from "node:test";
+import { test, after } from "node:test";
 import { strict as assert } from "node:assert";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -19,7 +19,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { delimiter, join, resolve } from "node:path";
+import { basename, delimiter, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { cli, invoke, makeFixture, readJson, writeJson } from "./helpers.mjs";
 import { inspectChangeset, validateChangesetSnapshot } from "../dist/core/changeset.js";
@@ -62,12 +62,64 @@ function git(root, ...args) {
   assert.equal(result.status, 0, result.stderr);
   return result.stdout.trim();
 }
+let fixtureSeed;
+const fixtureRoots = new Set();
+after(() => {
+  const errors = [];
+  try {
+    if (fixtureSeed)
+      assert.equal(
+        inventory(fixtureSeed.root),
+        fixtureSeed.inventory,
+        "Cases must leave the pristine native Git seed unchanged",
+      );
+  } catch (error) {
+    errors.push(error);
+  }
+  for (const root of fixtureRoots) {
+    try {
+      rmSync(root, { recursive: true, force: true });
+    } catch (error) {
+      errors.push(error);
+    }
+  }
+  if (errors.length === 1) throw errors[0];
+  if (errors.length > 1)
+    throw new AggregateError(
+      errors,
+      "Changeset fixture seed integrity or cleanup failed",
+    );
+});
 function fixture() {
-  const root = makeFixture(3);
-  git(root, "init", "-q");
-  git(root, "add", ".");
-  git(root, "commit", "-qm", "baseline");
-  return { root, base: git(root, "rev-parse", "HEAD") };
+  if (!fixtureSeed) {
+    const root = makeFixture(3);
+    fixtureRoots.add(root);
+    git(root, "init", "-q");
+    git(root, "add", ".");
+    git(root, "commit", "-qm", "baseline");
+    fixtureSeed = {
+      root,
+      base: git(root, "rev-parse", "HEAD"),
+      inventory: inventory(root),
+    };
+  }
+  const parent = mkdtempSync(join(tmpdir(), "arrs changeset copy "));
+  fixtureRoots.add(parent);
+  // Keep the initialized project.name/basename relationship without rewriting
+  // tracked configuration. Each case receives independent Git and source bytes.
+  const root = join(parent, basename(fixtureSeed.root));
+  cpSync(fixtureSeed.root, root, { recursive: true });
+  assert.equal(inventory(root), fixtureSeed.inventory);
+  for (const path of ["", ".git", ".git/index", "src/domain/greeting.mjs"]) {
+    const copied = statSync(join(root, path), { bigint: true });
+    const seed = statSync(join(fixtureSeed.root, path), { bigint: true });
+    assert.notDeepEqual(
+      [copied.dev, copied.ino],
+      [seed.dev, seed.ino],
+      `Fixture copy must have an independent filesystem identity: ${path || "."}`,
+    );
+  }
+  return { root, base: fixtureSeed.base };
 }
 function report(root, args, expected = 0, env, preload) {
   const result =
