@@ -40,11 +40,39 @@ try {
 }
 // Exercise the opted-in changeset contract through real CLI/Git interfaces,
 // including negative integrity/no-effect cases, under the existing verify argv.
-const changeset = spawnSync(process.execPath, ["--test", "tests/changeset.test.mjs"], {
-  cwd: process.cwd(),
-  stdio: "inherit",
-  timeout: 120000,
-});
+const changesetStarted = performance.now();
+const changeset = spawnSync(
+  process.execPath,
+  [
+    "--test",
+    "--test-concurrency=2",
+    "tests/changeset-group-a.mjs",
+    "tests/changeset-group-b.mjs",
+  ],
+  {
+    cwd: process.cwd(),
+    stdio: "inherit",
+    timeout: 120000,
+  },
+);
+console.log(
+  JSON.stringify({
+    stage: "native changeset verification",
+    elapsedMs: Math.round(performance.now() - changesetStarted),
+    timeoutMs: 120000,
+    status: changeset.status,
+    signal: changeset.signal,
+    error: changeset.error
+      ? {
+          name: changeset.error.name,
+          code: changeset.error.code,
+          message: changeset.error.message.slice(0, 500),
+        }
+      : null,
+  }),
+);
+assert.equal(changeset.error, undefined, "Native changeset spawn must not fail");
+assert.equal(changeset.signal, null, "Native changeset must not terminate by signal");
 assert.equal(changeset.status, 0, "Explicit Git changeset behavior must pass");
 
 // Public graph/readiness composition is exercised under the unchanged standard verify binding.
