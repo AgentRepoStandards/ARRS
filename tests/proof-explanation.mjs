@@ -541,12 +541,61 @@ test(
   "Chromium renders hostile report text inert and makes no page network requests",
   { timeout: 30000 },
   async (t) => {
-    const executable = process.env.ARRS_REPORT_BROWSER ?? "/usr/bin/chromium";
+    const executable =
+      process.env.ARRS_REPORT_BROWSER ??
+      (process.env.CHROME_BIN && existsSync(process.env.CHROME_BIN)
+        ? process.env.CHROME_BIN
+        : "/usr/bin/chromium");
     if (!existsSync(executable))
       return t.skip("Chromium is unavailable; browser verification remains explicit");
     const root = makeFixture();
     let browser;
+    let browserClosed;
+    let browserStartedAt;
+    let browserError;
+    let stderrBytes = 0;
+    let stderrTail = Buffer.alloc(0);
     let socket;
+    const browserDiagnostic = (reason, error = browserError) =>
+      JSON.stringify({
+        reason,
+        executable,
+        pid: browser?.pid ?? null,
+        elapsedMs:
+          browserStartedAt === undefined
+            ? null
+            : Math.round(performance.now() - browserStartedAt),
+        startupTimeoutMs: 10000,
+        exitCode: browser?.exitCode ?? null,
+        signalCode: browser?.signalCode ?? null,
+        error: error
+          ? {
+              name: error.name,
+              message: error.message,
+              code: error.code,
+              errno: error.errno,
+              syscall: error.syscall,
+            }
+          : null,
+        stderrBytes,
+        stderrTail: stderrTail.toString("utf8"),
+        devToolsActivePortPresent: existsSync(
+          join(root, ".arrs/browser-profile/DevToolsActivePort"),
+        ),
+      });
+    const waitForBrowserClose = async (timeoutMs) => {
+      let timer;
+      try {
+        return await Promise.race([
+          browserClosed.then(() => true),
+          new Promise((resolve) => {
+            timer = setTimeout(() => resolve(false), timeoutMs);
+          }),
+        ]);
+      } finally {
+        clearTimeout(timer);
+      }
+    };
     try {
       const path = proof(root, "R1", true);
       const exported = invoke(root, [
@@ -558,6 +607,7 @@ test(
       ]);
       assert.equal(exported.status, 0, exported.stdout);
       const html = join(root, JSON.parse(exported.stdout).path);
+      browserStartedAt = performance.now();
       browser = spawn(
         executable,
         [
@@ -573,22 +623,54 @@ test(
         ],
         { stdio: ["ignore", "ignore", "pipe"] },
       );
+      browserClosed = new Promise((resolve) => browser.once("close", resolve));
+      browser.on("error", (error) => {
+        browserError = error;
+      });
       const endpoint = await new Promise((resolve, reject) => {
-        let stderr = "";
-        const timer = setTimeout(
-          () => reject(new Error(`Browser did not start: ${stderr.slice(-1000)}`)),
-          10000,
-        );
-        browser.once("error", reject);
-        browser.stderr.on("data", (chunk) => {
-          stderr += chunk;
-          const match = /DevTools listening on (ws:\/\/[^\s]+)/.exec(stderr);
-          if (match) {
-            clearTimeout(timer);
+        let settled = false;
+        const clear = () => {
+          clearTimeout(timer);
+          browser.off("error", onError);
+          browser.off("exit", onExit);
+          browser.stderr.off("data", onData);
+          browser.stderr.resume();
+        };
+        const fail = (reason, error) => {
+          if (settled) return;
+          settled = true;
+          clear();
+          reject(new Error(`Browser did not start: ${browserDiagnostic(reason, error)}`));
+        };
+        const onError = (error) => fail("spawn error", error);
+        const onExit = () => fail("early exit");
+        const onData = (chunk) => {
+          stderrBytes += chunk.length;
+          const observed = Buffer.concat([stderrTail, chunk]);
+          const match = /DevTools listening on (ws:\/\/[^\s]+)/.exec(
+            observed.toString("utf8"),
+          );
+          stderrTail = observed.subarray(-8192);
+          if (match && !settled) {
+            settled = true;
+            clear();
             resolve(match[1]);
           }
-        });
+        };
+        const timer = setTimeout(() => fail("startup timeout"), 10000);
+        browser.once("error", onError);
+        browser.once("exit", onExit);
+        browser.stderr.on("data", onData);
       });
+      t.diagnostic(
+        JSON.stringify({
+          status: "ready",
+          executable,
+          pid: browser.pid,
+          elapsedMs: Math.round(performance.now() - browserStartedAt),
+          startupTimeoutMs: 10000,
+        }),
+      );
       const url = new URL(endpoint);
       const targets = await (await fetch(`http://${url.host}/json/list`)).json();
       socket = new WebSocket(
@@ -657,13 +739,21 @@ test(
       );
       assert.equal(requests.length, 0, JSON.stringify(requests));
     } finally {
-      socket?.close();
-      if (browser && browser.exitCode === null) {
-        const stopped = new Promise((resolve) => browser.once("exit", resolve));
-        browser.kill("SIGTERM");
-        await stopped;
+      try {
+        socket?.close();
+        if (browser && browser.exitCode === null && browser.signalCode === null) {
+          browser.kill("SIGTERM");
+          if (!(await waitForBrowserClose(1000))) {
+            browser.kill("SIGKILL");
+            if (!(await waitForBrowserClose(1000)))
+              throw new Error(
+                `Browser did not stop: ${browserDiagnostic("cleanup timeout")}`,
+              );
+          }
+        }
+      } finally {
+        rmSync(root, { recursive: true, force: true });
       }
-      rmSync(root, { recursive: true, force: true });
     }
   },
 );

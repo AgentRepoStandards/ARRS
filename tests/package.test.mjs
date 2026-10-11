@@ -31,7 +31,7 @@ function npmProcessDiagnostic(stage, result, startedAt) {
   );
 }
 
-test("packed install excludes development dependencies and retains executable schemas, docs, local MCP and offline skills", async () => {
+test("packed install excludes development dependencies and retains executable schemas, docs, local MCP and offline skills", async (t) => {
   const root = mkdtempSync(join(tmpdir(), "arrs-package-"));
   try {
     const npmCli = process.env.npm_execpath;
@@ -59,12 +59,26 @@ test("packed install excludes development dependencies and retains executable sc
         "--no-audit",
         "--no-fund",
       ],
-      { encoding: "utf8", timeout: 60000 },
+      {
+        encoding: "utf8",
+        timeout: 60000,
+        // Use cached npm data without freshness checks; cache misses still use network.
+        env: { ...process.env, npm_config_prefer_offline: "true" },
+      },
     );
     assert.equal(
       install.status,
       0,
       npmProcessDiagnostic("npm install", install, installStartedAt),
+    );
+    t.diagnostic(
+      JSON.stringify({
+        stage: "npm install",
+        elapsedMs: Math.round(performance.now() - installStartedAt),
+        timeoutMs: 60000,
+        preferOffline: true,
+        status: install.status,
+      }),
     );
     const distribution = join(installed, "node_modules/@arrs/cli"),
       executable = join(distribution, "dist/cli.js");
