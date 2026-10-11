@@ -5,8 +5,10 @@ import { createHash } from "node:crypto";
 import {
   accessSync,
   constants,
+  chmodSync,
   cpSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -67,12 +69,26 @@ const fixtureRoots = new Set();
 after(() => {
   const errors = [];
   try {
-    if (fixtureSeed)
+    if (fixtureSeed) {
       assert.equal(
         inventory(fixtureSeed.root),
         fixtureSeed.inventory,
         "Cases must leave the pristine native Git seed unchanged",
       );
+      assert.deepEqual(
+        seedEntries(fixtureSeed.root, false),
+        fixtureSeed.structure,
+        "Cases must leave every seed path, type and permission mode unchanged",
+      );
+      for (const [path, identity] of fixtureSeed.identities) {
+        const current = statSync(join(fixtureSeed.root, path), { bigint: true });
+        assert.deepEqual(
+          [current.dev, current.ino],
+          identity,
+          `The retained seed identity must not change: ${path || "."}`,
+        );
+      }
+    }
   } catch (error) {
     errors.push(error);
   }
@@ -90,6 +106,43 @@ after(() => {
       "Changeset fixture seed integrity or cleanup failed",
     );
 });
+// Capture the complete private native seed once. Unsupported entries fail explicitly.
+function seedEntries(root, includeBytes = true) {
+  const entries = [];
+  function visit(path = "") {
+    const source = join(root, path);
+    const stat = lstatSync(source);
+    const mode = stat.mode & 0o777;
+    if (stat.isDirectory()) {
+      entries.push({ path, directory: true, mode });
+      for (const name of readdirSync(source).sort()) visit(join(path, name));
+    } else {
+      assert.equal(stat.isFile(), true, `Seed entry must be a regular file: ${path}`);
+      entries.push({
+        path,
+        directory: false,
+        mode,
+        ...(includeBytes ? { bytes: readFileSync(source) } : {}),
+      });
+    }
+  }
+  visit();
+  return entries;
+}
+function materializeSeed(root, entries) {
+  for (const entry of entries) {
+    const destination = join(root, entry.path);
+    if (entry.directory) mkdirSync(destination, { mode: 0o700 });
+    else {
+      writeFileSync(destination, entry.bytes, { flag: "wx", mode: 0o600 });
+      // Restore captured permissions despite the process umask, including executable repo.
+      chmodSync(destination, entry.mode);
+    }
+  }
+  // Populate children before restoring potentially read-only directory permissions.
+  for (const entry of entries.toReversed())
+    if (entry.directory) chmodSync(join(root, entry.path), entry.mode);
+}
 function fixture() {
   if (!fixtureSeed) {
     const root = makeFixture(3);
@@ -97,10 +150,19 @@ function fixture() {
     git(root, "init", "-q");
     git(root, "add", ".");
     git(root, "commit", "-qm", "baseline");
+    const entries = seedEntries(root);
     fixtureSeed = {
       root,
       base: git(root, "rev-parse", "HEAD"),
       inventory: inventory(root),
+      entries,
+      structure: entries.map(({ bytes, ...entry }) => entry),
+      identities: new Map(
+        ["", ".git", ".git/index", "src/domain/greeting.mjs"].map((path) => {
+          const stat = statSync(join(root, path), { bigint: true });
+          return [path, [stat.dev, stat.ino]];
+        }),
+      ),
     };
   }
   const parent = mkdtempSync(join(tmpdir(), "arrs changeset copy "));
@@ -108,14 +170,18 @@ function fixture() {
   // Keep the initialized project.name/basename relationship without rewriting
   // tracked configuration. Each case receives independent Git and source bytes.
   const root = join(parent, basename(fixtureSeed.root));
-  cpSync(fixtureSeed.root, root, { recursive: true });
+  materializeSeed(root, fixtureSeed.entries);
   assert.equal(inventory(root), fixtureSeed.inventory);
+  assert.deepEqual(
+    seedEntries(root, false),
+    fixtureSeed.structure,
+    "Every materialized path, type and permission mode must match the native seed",
+  );
   for (const path of ["", ".git", ".git/index", "src/domain/greeting.mjs"]) {
     const copied = statSync(join(root, path), { bigint: true });
-    const seed = statSync(join(fixtureSeed.root, path), { bigint: true });
     assert.notDeepEqual(
       [copied.dev, copied.ino],
-      [seed.dev, seed.ino],
+      fixtureSeed.identities.get(path),
       `Fixture copy must have an independent filesystem identity: ${path || "."}`,
     );
   }

@@ -48,7 +48,7 @@ export function makeFixture(level = 3) {
   );
   writeFileSync(
     join(root, "build.mjs"),
-    "import {spawnSync} from 'node:child_process'; for(const file of ['src/domain/greeting.mjs','src/application/main.mjs']) { const result=spawnSync(process.execPath,['--check',file],{encoding:'utf8'}); if(result.status!==0){console.error(result.stderr);process.exit(result.status??1);} } console.log('JavaScript distribution syntax validated');\n",
+    "import {execFile} from 'node:child_process'; const files=['src/domain/greeting.mjs','src/application/main.mjs']; const results=await Promise.all(files.map(file=>new Promise(resolve=>{execFile(process.execPath,['--check',file],{encoding:'utf8',maxBuffer:1024*1024},(error,stdout,stderr)=>resolve({status:error?(typeof error.code==='number'&&error.code>0?error.code:null):0,stderr}));}))); for(const result of results){if(result.status!==0){console.error(result.stderr);process.exit(result.status??1);}} console.log('JavaScript distribution syntax validated');\n",
   );
   const config = readJson(root, "arrs.json");
   config.commands = {
